@@ -2,7 +2,6 @@ package za.co.no9.ses8.domain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import za.co.no9.ses8.domain.provider.EventDetail;
 
 
 class CommandsTest {
@@ -12,16 +11,16 @@ class CommandsTest {
 
     @Test
     void publishAnEvent() {
-        EventDetail eventDetail1 =
+        Event event1 =
                 commands.publish(new CustomerAdded("Luke Skywalker"));
 
-        EventDetail eventDetail2 =
+        Event event2 =
                 commands.publish(new CustomerAdded("Ben Kenobi"));
 
-        Assertions.assertEquals(eventDetail1.id, 0);
-        Assertions.assertEquals(eventDetail1.content.toString(), "CustomerAdded{name='Luke Skywalker'}");
+        Assertions.assertEquals(event1.id, 0);
+        Assertions.assertEquals(event1.content.toString(), "CustomerAdded{name='Luke Skywalker'}");
 
-        Assertions.assertEquals(eventDetail2.id, 1);
-        Assertions.assertEquals(eventDetail2.content.toString(), "CustomerAdded{name='Ben Kenobi'}");
+        Assertions.assertEquals(event2.id, 1);
+        Assertions.assertEquals(event2.content.toString(), "CustomerAdded{name='Ben Kenobi'}");
     }
 }

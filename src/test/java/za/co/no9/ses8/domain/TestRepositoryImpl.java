@@ -1,6 +1,5 @@
 package za.co.no9.ses8.domain;
 
-import za.co.no9.ses8.domain.provider.EventDetail;
 import za.co.no9.ses8.domain.provider.Repository;
 
 import java.time.Instant;
@@ -10,7 +9,7 @@ import java.util.List;
 
 
 public class TestRepositoryImpl implements Repository {
-    private List<EventDetail> savedEvents =
+    private List<Event> savedEvents =
             new ArrayList<>();
 
     private int idCounter =
@@ -18,9 +17,9 @@ public class TestRepositoryImpl implements Repository {
 
 
     @Override
-    public EventDetail saveEvent(Object event) {
-        EventDetail detail =
-                new EventDetail(idCounter, Date.from(Instant.now()), event);
+    public Event saveEvent(Object event) {
+        Event detail =
+                new Event(idCounter, Date.from(Instant.now()), event);
 
         savedEvents.add(detail);
         idCounter += 1;
