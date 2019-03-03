@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public class TestRepositoryImpl implements Repository {
-    private List<String> savedEvents =
+    private List<EventDetail> savedEvents =
             new ArrayList<>();
 
     private int idCounter =
@@ -19,14 +19,12 @@ public class TestRepositoryImpl implements Repository {
 
     @Override
     public EventDetail saveEvent(Object event) {
-        String content =
-                event.toString();
+        EventDetail detail =
+                new EventDetail(idCounter, Date.from(Instant.now()), event);
 
-        savedEvents.add(content);
-
-        EventDetail result = new EventDetail(idCounter, Date.from(Instant.now()), content);
+        savedEvents.add(detail);
         idCounter += 1;
 
-        return result;
+        return detail;
     }
 }

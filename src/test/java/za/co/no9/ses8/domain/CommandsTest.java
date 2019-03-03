@@ -19,9 +19,9 @@ class CommandsTest {
                 commands.publish(new CustomerAdded("Ben Kenobi"));
 
         Assertions.assertEquals(eventDetail1.id, 0);
-        Assertions.assertEquals(eventDetail1.content, "CustomerAdded{name='Luke Skywalker'}");
+        Assertions.assertEquals(eventDetail1.content.toString(), "CustomerAdded{name='Luke Skywalker'}");
 
         Assertions.assertEquals(eventDetail2.id, 1);
-        Assertions.assertEquals(eventDetail2.content, "CustomerAdded{name='Ben Kenobi'}");
+        Assertions.assertEquals(eventDetail2.content.toString(), "CustomerAdded{name='Ben Kenobi'}");
     }
 }

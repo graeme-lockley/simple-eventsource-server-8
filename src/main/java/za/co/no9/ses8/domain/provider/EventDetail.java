@@ -5,10 +5,10 @@ import java.util.Date;
 public class EventDetail {
     public final int id;
     public final Date when;
-    public final String content;
+    public final Object content;
 
 
-    public EventDetail(int id, Date when, String content) {
+    public EventDetail(int id, Date when, Object content) {
         this.id = id;
         this.when = when;
         this.content = content;
