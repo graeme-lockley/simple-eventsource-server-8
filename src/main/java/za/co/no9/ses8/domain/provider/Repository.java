@@ -9,4 +9,6 @@ public interface Repository {
     Event saveEvent(Object event);
 
     Iterator<Event> events();
+
+    Iterator<Event> eventsFrom(int id);
 }

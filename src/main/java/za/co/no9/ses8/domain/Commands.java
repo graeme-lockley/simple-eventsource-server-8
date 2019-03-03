@@ -16,4 +16,8 @@ public abstract class Commands {
     public Iterator<Event> events() {
         return repository().events();
     }
+
+    public Iterator<Event> eventsFrom(int id) {
+        return repository().eventsFrom(id);
+    }
 }

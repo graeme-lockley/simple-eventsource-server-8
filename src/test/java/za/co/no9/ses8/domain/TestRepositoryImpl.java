@@ -32,4 +32,26 @@ public class TestRepositoryImpl implements Repository {
     public Iterator<Event> events() {
         return savedEvents.iterator();
     }
+
+
+    @Override
+    public Iterator<Event> eventsFrom(int id) {
+        int index =
+                0;
+
+        int lengthOfSavedEvents =
+                savedEvents.size();
+
+        while (true) {
+            if (index < lengthOfSavedEvents) {
+                if (savedEvents.get(index).id <= id) {
+                    index += 1;
+                } else {
+                    return savedEvents.listIterator(index);
+                }
+            } else {
+                return new ArrayList<Event>().iterator();
+            }
+        }
+    }
 }

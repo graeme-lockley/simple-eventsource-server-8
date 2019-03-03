@@ -53,6 +53,30 @@ class CommandsTest {
     }
 
 
+    @Test
+    void eventsFromOverEmptyStream() {
+        Iterator<Event> events =
+                commands.eventsFrom(1);
+
+        Assertions.assertFalse(events.hasNext());
+    }
+
+
+    @Test
+    void eventsFromOverNonEmptyStream() {
+        commands.publish(new CustomerAdded("Luke Skywalker"));
+        commands.publish(new CustomerAdded("Ben Kenobi"));
+        commands.publish(new CustomerAdded("Leia Organa"));
+
+        Iterator<Event> events =
+                commands.eventsFrom(1);
+
+        assertNextName(events, 2, "CustomerAdded{name='Leia Organa'}");
+
+        Assertions.assertFalse(events.hasNext());
+    }
+
+
     private void assertNextName(Iterator<Event> events, int id, String content) {
         Assertions.assertTrue(events.hasNext());
 
