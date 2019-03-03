@@ -4,7 +4,7 @@ import za.co.no9.ses8.domain.provider.Repository;
 
 import java.util.Iterator;
 
-public abstract class Commands {
+public abstract class Services {
     protected abstract Repository repository();
 
 

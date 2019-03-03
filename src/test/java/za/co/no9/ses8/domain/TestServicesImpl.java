@@ -2,7 +2,7 @@ package za.co.no9.ses8.domain;
 
 import za.co.no9.ses8.domain.provider.Repository;
 
-public class TestCommandsImpl extends Commands {
+public class TestServicesImpl extends Services {
     private TestRepositoryImpl repository =
             new TestRepositoryImpl();
 
