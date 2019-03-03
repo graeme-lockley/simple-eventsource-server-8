@@ -1,4 +1,4 @@
-package za.co.no9.ses8.domain.provider;
+package za.co.no9.ses8.domain.ports;
 
 
 import za.co.no9.ses8.domain.Event;

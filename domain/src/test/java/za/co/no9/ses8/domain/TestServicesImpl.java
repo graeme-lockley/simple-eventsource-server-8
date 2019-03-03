@@ -1,6 +1,6 @@
 package za.co.no9.ses8.domain;
 
-import za.co.no9.ses8.domain.provider.Repository;
+import za.co.no9.ses8.domain.ports.Repository;
 
 public class TestServicesImpl extends Services {
     private TestRepositoryImpl repository =
