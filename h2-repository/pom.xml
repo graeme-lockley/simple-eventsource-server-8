@@ -48,7 +48,8 @@
         <dependency>
             <groupId>za.co.no9</groupId>
             <artifactId>jfixtures</artifactId>
-            <version>1.4</version>
+            <version>${jfixtures.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
