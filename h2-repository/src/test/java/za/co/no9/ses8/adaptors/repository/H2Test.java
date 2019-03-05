@@ -15,9 +15,10 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 class H2Test {
     private Jdbi jdbi;
-
+    private H2 h2;
 
     @BeforeEach
     void before() throws IOException, FixtureException {
@@ -25,13 +26,12 @@ class H2Test {
                 Fixtures.process(FixturesInput.fromLocation("resource:initial.yaml"));
 
         jdbi = Jdbi.create(fixtures.findHandler(JDBCHandler.class).get().connection());
+        h2 = new H2();
     }
 
 
     @Test
     void saveEvent() {
-        H2 h2 = new H2();
-
         Event event1 =
                 h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
 
@@ -48,8 +48,6 @@ class H2Test {
 
     @Test
     void events() {
-        H2 h2 = new H2();
-
         h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
         h2.saveEvent(jdbi, new CustomerAdded("Han Solo"));
         h2.saveEvent(jdbi, new CustomerAdded("R2D2"));
@@ -59,6 +57,21 @@ class H2Test {
 
         assertNextName(events, 1, "CustomerAdded{name='Luke Skywalker'}");
         assertNextName(events, 2, "CustomerAdded{name='Han Solo'}");
+        assertNextName(events, 3, "CustomerAdded{name='R2D2'}");
+
+        Assertions.assertFalse(events.hasNext());
+    }
+
+
+    @Test
+    void eventsFrom() {
+        h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
+        h2.saveEvent(jdbi, new CustomerAdded("Han Solo"));
+        h2.saveEvent(jdbi, new CustomerAdded("R2D2"));
+
+        Iterator<Event> events =
+                h2.eventsFrom(jdbi, 2);
+
         assertNextName(events, 3, "CustomerAdded{name='R2D2'}");
 
         Assertions.assertFalse(events.hasNext());

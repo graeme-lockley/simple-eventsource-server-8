@@ -38,6 +38,9 @@ public class H2 implements Repository<Jdbi> {
 
     @Override
     public Iterator<Event> eventsFrom(Jdbi jdbi, int id) {
-        return null;
+        return jdbi.withHandle(handle -> handle
+                .select("select id, when, content from event where id > ? order by id", id)
+                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
+                .list()).iterator();
     }
 }
