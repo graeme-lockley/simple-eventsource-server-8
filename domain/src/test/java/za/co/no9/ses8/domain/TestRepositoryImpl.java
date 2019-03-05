@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class TestRepositoryImpl implements Repository {
+public class TestRepositoryImpl implements Repository<TestContextImpl> {
     private List<Event> savedEvents =
             new ArrayList<>();
 
@@ -18,7 +18,7 @@ public class TestRepositoryImpl implements Repository {
 
 
     @Override
-    public Event saveEvent(Object event) {
+    public Event saveEvent(TestContextImpl ctx, Object event) {
         Event detail =
                 new Event(idCounter, Date.from(Instant.now()), event);
 
@@ -29,13 +29,13 @@ public class TestRepositoryImpl implements Repository {
     }
 
     @Override
-    public Iterator<Event> events() {
+    public Iterator<Event> events(TestContextImpl ctx) {
         return savedEvents.iterator();
     }
 
 
     @Override
-    public Iterator<Event> eventsFrom(int id) {
+    public Iterator<Event> eventsFrom(TestContextImpl ctx, int id) {
         int index =
                 0;
 

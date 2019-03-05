@@ -5,10 +5,10 @@ import za.co.no9.ses8.domain.Event;
 
 import java.util.Iterator;
 
-public interface Repository {
-    Event saveEvent(Object event);
+public interface Repository<T> {
+    Event saveEvent(T ctx, Object event);
 
-    Iterator<Event> events();
+    Iterator<Event> events(T ctx);
 
-    Iterator<Event> eventsFrom(int id);
+    Iterator<Event> eventsFrom(T ctx, int id);
 }

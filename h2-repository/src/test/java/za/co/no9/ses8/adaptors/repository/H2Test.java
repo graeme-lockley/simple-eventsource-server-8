@@ -1,5 +1,6 @@
 package za.co.no9.ses8.adaptors.repository;
 
+import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.no9.jfixture.FixtureException;
@@ -13,23 +14,27 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class H2Test {
+    private Jdbi jdbi;
+
+
     @BeforeEach
     void before() throws IOException, FixtureException {
+        Fixtures fixtures =
+                Fixtures.process(FixturesInput.fromLocation("resource:initial.yaml"));
+
+        jdbi = Jdbi.create(fixtures.findHandler(JDBCHandler.class).get().connection());
     }
 
 
     @Test
-    void aTest() throws IOException, FixtureException {
-        Fixtures fixtures =
-                Fixtures.process(FixturesInput.fromLocation("resource:initial.yaml"));
-
-        H2 h2 = new H2(fixtures.findHandler(JDBCHandler.class).get().connection());
+    void aTest() {
+        H2 h2 = new H2();
 
         Event event1 =
-                h2.saveEvent(new CustomerAdded("Luke Skywalker"));
+                h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
 
         Event event2 =
-                h2.saveEvent(new CustomerAdded("Han Solo"));
+                h2.saveEvent(jdbi, new CustomerAdded("Han Solo"));
 
         assertEquals(1, event1.id);
         assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content);
