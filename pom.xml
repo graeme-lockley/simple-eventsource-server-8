@@ -19,6 +19,7 @@
         <junit.platform.launcher.version>1.4.0</junit.platform.launcher.version>
         <junit.version>5.4.0</junit.version>
         <jfixtures.version>1.4</jfixtures.version>
+        <jdbi.version>3.6.0</jdbi.version>
     </properties>
 
     <modules>

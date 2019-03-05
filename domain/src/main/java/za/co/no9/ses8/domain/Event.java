@@ -13,4 +13,14 @@ public class Event {
         this.when = when;
         this.content = content;
     }
+
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", when=" + when +
+                ", content=" + content +
+                '}';
+    }
 }
