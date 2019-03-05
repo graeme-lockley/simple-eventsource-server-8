@@ -21,7 +21,7 @@ public class H2 implements Repository<Jdbi> {
 
             return handle
                     .createQuery("select id, when, content from event where id = SCOPE_IDENTITY()")
-                    .map((rs, xtx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
+                    .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
                     .findOnly();
         });
     }
@@ -29,7 +29,10 @@ public class H2 implements Repository<Jdbi> {
 
     @Override
     public Iterator<Event> events(Jdbi jdbi) {
-        return null;
+        return jdbi.withHandle(handle -> handle
+                        .createQuery("select id, when, content from event order by id")
+                        .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
+                        .list()).iterator();
     }
 
 
