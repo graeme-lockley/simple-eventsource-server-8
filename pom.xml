@@ -16,10 +16,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <h2.database.version>1.4.198</h2.database.version>
+        <java.activation.version>1.1.1</java.activation.version>
+        <jaxb.version>2.3.0</jaxb.version>
+        <jdbi.version>3.6.0</jdbi.version>
+        <jersey.version>2.28</jersey.version>
+        <jfixtures.version>1.5</jfixtures.version>
         <junit.platform.launcher.version>1.4.0</junit.platform.launcher.version>
         <junit.version>5.4.0</junit.version>
-        <jfixtures.version>1.5</jfixtures.version>
-        <jdbi.version>3.6.0</jdbi.version>
     </properties>
 
     <modules>
