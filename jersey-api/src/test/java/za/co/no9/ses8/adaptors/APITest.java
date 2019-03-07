@@ -5,9 +5,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class APITest {
@@ -17,10 +18,11 @@ class APITest {
 
     @BeforeEach
     void before() {
-        server = Main.startServer();
+        server =
+                Main.startServer();
 
-        Client c = ClientBuilder.newClient();
-        target = c.target(Main.BASE_URI);
+        target =
+                ClientBuilder.newClient().target(Main.BASE_URI);
     }
 
 
@@ -29,8 +31,12 @@ class APITest {
         server.shutdownNow();
     }
 
+
     @Test
     void aTest() {
+        String responseMsg =
+                target.path("events").request().get(String.class);
 
+        assertEquals("Hello World", responseMsg);
     }
 }
