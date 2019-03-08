@@ -14,10 +14,10 @@ class ServicesTest {
     @Test
     void publishAnEvent() {
         Event event1 =
-                services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Luke Skywalker"));
+                services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
 
         Event event2 =
-                services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Ben Kenobi"));
+                services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
 
         Assertions.assertEquals(0, event1.id);
         Assertions.assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content.toString());
@@ -38,9 +38,9 @@ class ServicesTest {
 
     @Test
     void eventsOverNoneEmptyStream() {
-        services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Luke Skywalker"));
-        services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Ben Kenobi"));
-        services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Leia Organa"));
+        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Iterator<Event> events =
                 services.events(TestContextImpl.INSTANCE);
@@ -64,9 +64,9 @@ class ServicesTest {
 
     @Test
     void eventsFromOverNonEmptyStream() {
-        services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Luke Skywalker"));
-        services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Ben Kenobi"));
-        services.publish(TestContextImpl.INSTANCE, new CustomerAdded("Leia Organa"));
+        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Iterator<Event> events =
                 services.eventsFrom(TestContextImpl.INSTANCE, 1);
@@ -84,6 +84,11 @@ class ServicesTest {
                 events.next();
 
         Assertions.assertEquals(id, event.id);
-        Assertions.assertEquals(content, event.content.toString());
+        Assertions.assertEquals("CustomerAdded", event.eventName);
+        Assertions.assertEquals(content, event.content);
+    }
+
+    private String customerAddedEvent(String name) {
+        return new CustomerAdded(name).toString();
     }
 }

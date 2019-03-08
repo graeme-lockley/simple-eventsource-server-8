@@ -8,8 +8,8 @@ public abstract class Services<T> {
     protected abstract Repository<T> repository();
 
 
-    public Event publish(T ctx, Object event) {
-        return repository().saveEvent(ctx, event);
+    public Event publish(T ctx, String eventName, String content) {
+        return repository().saveEvent(ctx, eventName, content);
     }
 
 

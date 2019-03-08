@@ -6,7 +6,7 @@ import za.co.no9.ses8.domain.Event;
 import java.util.Iterator;
 
 public interface Repository<T> {
-    Event saveEvent(T ctx, Object event);
+    Event saveEvent(T ctx, String eventName, String content);
 
     Iterator<Event> events(T ctx);
 

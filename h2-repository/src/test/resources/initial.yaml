@@ -11,4 +11,5 @@
     fields:
       id: 'bigint not null primary key auto_increment'
       when: 'timestamp not null'
+      name: 'varchar(20) not null'
       content: 'text not null'

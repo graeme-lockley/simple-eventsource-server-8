@@ -15,13 +15,13 @@ public class H2 implements Repository<Jdbi> {
 
 
     @Override
-    public Event saveEvent(Jdbi jdbi, Object event) {
+    public Event saveEvent(Jdbi jdbi, String eventName, String content) {
         return jdbi.withHandle(handle -> {
-            handle.execute("insert into event (when, content) values (?, ?)", new Timestamp(Date.from(Instant.now()).getTime()), event.toString());
+            handle.execute("insert into event (when, name, content) values (?, ?, ?)", new Timestamp(Date.from(Instant.now()).getTime()), eventName, content);
 
             return handle
-                    .createQuery("select id, when, content from event where id = SCOPE_IDENTITY()")
-                    .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
+                    .createQuery("select id, when, name, content from event where id = SCOPE_IDENTITY()")
+                    .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
                     .findOnly();
         });
     }
@@ -30,8 +30,8 @@ public class H2 implements Repository<Jdbi> {
     @Override
     public Iterator<Event> events(Jdbi jdbi) {
         return jdbi.withHandle(handle -> handle
-                        .createQuery("select id, when, content from event order by id")
-                        .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
+                        .createQuery("select id, when, name, content from event order by id")
+                        .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
                         .list()).iterator();
     }
 
@@ -39,8 +39,8 @@ public class H2 implements Repository<Jdbi> {
     @Override
     public Iterator<Event> eventsFrom(Jdbi jdbi, int id) {
         return jdbi.withHandle(handle -> handle
-                .select("select id, when, content from event where id > ? order by id", id)
-                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("content")))
+                .select("select id, when, name, content from event where id > ? order by id", id)
+                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
                 .list()).iterator();
     }
 }

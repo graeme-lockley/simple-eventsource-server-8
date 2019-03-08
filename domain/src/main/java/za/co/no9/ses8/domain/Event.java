@@ -5,12 +5,14 @@ import java.util.Date;
 public class Event {
     public final int id;
     public final Date when;
-    public final Object content;
+    public final String eventName;
+    public final String content;
 
 
-    public Event(int id, Date when, Object content) {
+    public Event(int id, Date when, String eventName, String content) {
         this.id = id;
         this.when = when;
+        this.eventName = eventName;
         this.content = content;
     }
 
@@ -20,7 +22,8 @@ public class Event {
         return "Event{" +
                 "id=" + id +
                 ", when=" + when +
-                ", content=" + content +
+                ", eventName='" + eventName + '\'' +
+                ", content='" + content + '\'' +
                 '}';
     }
 }

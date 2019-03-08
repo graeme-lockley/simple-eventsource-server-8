@@ -14,6 +14,9 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
             <column name="when" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="name" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
             <column name="content" type="text">
                 <constraints nullable="false"/>
             </column>

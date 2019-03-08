@@ -18,9 +18,9 @@ public class TestRepositoryImpl implements Repository<TestContextImpl> {
 
 
     @Override
-    public Event saveEvent(TestContextImpl ctx, Object event) {
+    public Event saveEvent(TestContextImpl ctx, String eventName, String content) {
         Event detail =
-                new Event(idCounter, Date.from(Instant.now()), event);
+                new Event(idCounter, Date.from(Instant.now()), eventName, content);
 
         savedEvents.add(detail);
         idCounter += 1;

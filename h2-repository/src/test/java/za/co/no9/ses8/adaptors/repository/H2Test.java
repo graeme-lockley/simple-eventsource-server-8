@@ -33,10 +33,10 @@ class H2Test {
     @Test
     void saveEvent() {
         Event event1 =
-                h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
+                saveEvent("Luke Skywalker");
 
         Event event2 =
-                h2.saveEvent(jdbi, new CustomerAdded("Han Solo"));
+                saveEvent("Han Solo");
 
         assertEquals(1, event1.id);
         assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content);
@@ -48,9 +48,9 @@ class H2Test {
 
     @Test
     void events() {
-        h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
-        h2.saveEvent(jdbi, new CustomerAdded("Han Solo"));
-        h2.saveEvent(jdbi, new CustomerAdded("R2D2"));
+        saveEvent("Luke Skywalker");
+        saveEvent("Han Solo");
+        saveEvent("R2D2");
 
         Iterator<Event> events =
                 h2.events(jdbi);
@@ -65,9 +65,9 @@ class H2Test {
 
     @Test
     void eventsFrom() {
-        h2.saveEvent(jdbi, new CustomerAdded("Luke Skywalker"));
-        h2.saveEvent(jdbi, new CustomerAdded("Han Solo"));
-        h2.saveEvent(jdbi, new CustomerAdded("R2D2"));
+        saveEvent("Luke Skywalker");
+        saveEvent("Han Solo");
+        saveEvent("R2D2");
 
         Iterator<Event> events =
                 h2.eventsFrom(jdbi, 2);
@@ -85,6 +85,10 @@ class H2Test {
                 events.next();
 
         Assertions.assertEquals(id, event.id);
-        Assertions.assertEquals(content, event.content.toString());
+        Assertions.assertEquals(content, event.content);
+    }
+
+    private Event saveEvent(String name) {
+        return h2.saveEvent(jdbi, "CustomerAdded", new CustomerAdded(name).toString());
     }
 }
