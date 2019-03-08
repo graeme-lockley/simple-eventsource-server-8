@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class APITest {
@@ -37,6 +37,7 @@ class APITest {
         String responseMsg =
                 target.path("events").request().get(String.class);
 
-        assertEquals("Hello World", responseMsg);
+        assertTrue(responseMsg.startsWith("{\"id\":100,\"when\":\""));
+        assertTrue(responseMsg.endsWith("\",\"content\":\"Some or other content\"}"));
     }
 }
