@@ -19,6 +19,7 @@ public class TestRepositoryImpl implements Repository {
     private int idCounter =
             0;
 
+
     @Override
     public UnitOfWork newUnitOfWork() {
         return new UnitOfWork() {
@@ -49,6 +50,7 @@ public class TestRepositoryImpl implements Repository {
 
         return detail;
     }
+
 
     private Stream<Event> events() {
         return savedEvents.stream();
