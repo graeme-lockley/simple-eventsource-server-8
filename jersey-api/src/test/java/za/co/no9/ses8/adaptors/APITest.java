@@ -10,8 +10,10 @@ import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -88,6 +90,18 @@ class APITest {
 
         assertEventEquals("CustomerAdded", "Luke Skywalker", response.get(0));
         assertEventEquals("CustomerAdded", "Ben Solo", response.get(1));
+    }
+
+
+    @Test
+    void saveEvents() {
+        NewEventBean input =
+                new NewEventBean("CharacterAdded", "{name: \"Luke Skywalker\"}");
+
+        EventBean response =
+                target.path("events").request("application/json").post(Entity.entity(input, MediaType.APPLICATION_JSON), EventBean.class);
+
+        assertEventEquals("CharacterAdded", "Luke Skywalker", response);
     }
 
 

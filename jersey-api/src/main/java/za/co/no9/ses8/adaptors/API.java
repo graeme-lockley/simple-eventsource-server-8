@@ -1,13 +1,11 @@
 package za.co.no9.ses8.adaptors;
 
+import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +16,20 @@ import java.util.stream.Collectors;
 public class API {
     @Inject
     public Repository repository;
+
+
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    public EventBean saveEvent(NewEventBean newEvent) {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        Event event =
+                unitOfWork.saveEvent(newEvent.name, newEvent.content);
+
+        return new EventBean(event.id, event.when, event.eventName, event.content);
+    }
 
 
     @GET
