@@ -49,6 +49,7 @@ public class TestRepositoryImpl implements Repository {
         return detail;
     }
 
+
     private Iterator<Event> events() {
         return savedEvents.iterator();
     }
