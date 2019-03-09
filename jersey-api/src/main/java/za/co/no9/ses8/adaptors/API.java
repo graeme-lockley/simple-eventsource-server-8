@@ -9,6 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,17 @@ public class API {
 
         return unitOfWork
                 .event(id)
-                .map(event -> Response.status(Response.Status.OK).entity(new EventBean(event.id, event.when, event.eventName, event.content)).build())
+                .map(event -> Response.status(Response.Status.OK).expires(calculateExpires()).entity(new EventBean(event.id, event.when, event.eventName, event.content)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
+    }
+
+
+    private Date calculateExpires() {
+        Calendar instance =
+                Calendar.getInstance();
+
+        instance.add(Calendar.YEAR, 1);
+
+        return instance.getTime();
     }
 }
