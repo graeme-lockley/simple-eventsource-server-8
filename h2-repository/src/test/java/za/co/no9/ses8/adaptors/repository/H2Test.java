@@ -12,9 +12,10 @@ import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class H2Test {
@@ -48,6 +49,34 @@ class H2Test {
 
         assertEquals(2, event2.id);
         assertEquals("CustomerAdded{name='Han Solo'}", event2.content);
+    }
+
+
+    @Test
+    void knownEvent() {
+            saveEvent("Luke Skywalker");
+            saveEvent("Han Solo");
+            saveEvent("R2D2");
+
+            Optional<Event> event =
+                    unitOfWork.event(2);
+
+            assertTrue(event.isPresent());
+
+            assertEventEquals(event.get(), 2, "CustomerAdded{name='Han Solo'}");
+    }
+
+
+    @Test
+    void unKnownEvent() {
+            saveEvent("Luke Skywalker");
+            saveEvent("Han Solo");
+            saveEvent("R2D2");
+
+            Optional<Event> event =
+                    unitOfWork.event(10);
+
+            assertFalse(event.isPresent());
     }
 
 

@@ -5,10 +5,7 @@ import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -26,6 +23,11 @@ public class TestRepositoryImpl implements Repository {
             @Override
             public Event saveEvent(String eventName, String content) {
                 return TestRepositoryImpl.this.saveEvent(eventName, content);
+            }
+
+            @Override
+            public Optional<Event> event(int id) {
+                return TestRepositoryImpl.this.event(id);
             }
 
             @Override
@@ -49,6 +51,11 @@ public class TestRepositoryImpl implements Repository {
         idCounter += 1;
 
         return detail;
+    }
+
+
+    private Optional<Event> event(int id) {
+        return savedEvents.stream().filter(event -> event.id == id).findFirst();
     }
 
 

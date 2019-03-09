@@ -6,6 +6,7 @@ import za.co.no9.ses8.domain.Event;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
@@ -26,6 +27,15 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
                     .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
                     .findOnly();
         });
+    }
+
+
+    @Override
+    public Optional<Event> event(int id) {
+        return jdbi.withHandle(handle -> handle
+                .select("select id, when, name, content from event where id = ?", id)
+                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
+                .findFirst());
     }
 
 

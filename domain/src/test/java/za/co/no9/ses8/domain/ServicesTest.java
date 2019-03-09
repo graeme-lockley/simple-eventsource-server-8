@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 
@@ -98,6 +99,34 @@ class ServicesTest {
         Assertions.assertEquals(1, eventsArray.length);
 
         assertEventEquals(eventsArray[0], 2, "CustomerAdded{name='Leia Organa'}");
+    }
+
+
+    @Test
+    void knownEventDetail() {
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+
+        Optional<Event> event =
+                services.event(unitOfWork, 1);
+
+        Assertions.assertTrue(event.isPresent());
+
+        assertEventEquals(event.get(), 1, "CustomerAdded{name='Ben Kenobi'}");
+    }
+
+
+    @Test
+    void unknownEventDetail() {
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+
+        Optional<Event> event =
+                services.event(unitOfWork, 10);
+
+        Assertions.assertFalse(event.isPresent());
     }
 
 

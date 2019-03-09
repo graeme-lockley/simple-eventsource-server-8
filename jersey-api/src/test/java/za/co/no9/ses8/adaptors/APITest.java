@@ -2,11 +2,13 @@ package za.co.no9.ses8.adaptors;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -38,6 +40,35 @@ class APITest {
     @AfterEach
     void after() {
         server.shutdownNow();
+    }
+
+
+    @Test
+    void knownEvent() {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+
+        EventBean response =
+                target.path("events/1").request().get(EventBean.class);
+
+        assertEventEquals("CustomerAdded", "Ben Solo", response);
+    }
+
+
+    @Test
+    void unknownEvent() {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+
+        Assertions.assertThrows(NotFoundException.class, () -> target.path("events/10").request().get(EventBean.class));
     }
 
 

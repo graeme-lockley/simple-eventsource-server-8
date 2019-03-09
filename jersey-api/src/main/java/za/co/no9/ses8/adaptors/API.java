@@ -6,7 +6,9 @@ import za.co.no9.ses8.domain.ports.UnitOfWork;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,5 +28,19 @@ public class API {
                 .events()
                 .map(event -> new EventBean(event.id, event.when, event.eventName, event.content))
                 .collect(Collectors.toList());
+    }
+
+
+    @GET
+    @Path("{id}")
+    @Produces("application/json")
+    public Response getEvent(@PathParam("id") int id) {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        return unitOfWork
+                .event(id)
+                .map(event -> Response.status(Response.Status.OK).entity(new EventBean(event.id, event.when, event.eventName, event.content)).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 }

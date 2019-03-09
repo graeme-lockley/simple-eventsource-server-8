@@ -2,6 +2,7 @@ package za.co.no9.ses8.domain;
 
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Services {
@@ -17,5 +18,10 @@ public class Services {
 
     public Stream<Event> eventsFrom(UnitOfWork unitOfWork, int id) {
         return unitOfWork.eventsFrom(id);
+    }
+
+
+    public Optional<Event> event(UnitOfWork unitOfWork, int id) {
+        return unitOfWork.event(id);
     }
 }
