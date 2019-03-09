@@ -10,7 +10,16 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class H2 implements Repository<Jdbi> {
-    public H2() {
+    private final Jdbi context;
+
+
+    public H2(Jdbi context) {
+        this.context = context;
+    }
+
+    @Override
+    public Jdbi newContext() {
+        return context;
     }
 
 

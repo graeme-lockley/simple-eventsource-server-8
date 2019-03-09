@@ -1,5 +1,6 @@
-package za.co.no9.ses8.domain;
+package za.co.no9.ses8.adaptors;
 
+import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.Repository;
 
 import java.time.Instant;
@@ -17,9 +18,14 @@ public class TestRepositoryImpl implements Repository<TestContextImpl> {
             0;
 
 
+    public TestRepositoryImpl() {
+
+    }
+
+
     @Override
     public TestContextImpl newContext() {
-        return null;
+        return TestContextImpl.INSTANCE;
     }
 
 

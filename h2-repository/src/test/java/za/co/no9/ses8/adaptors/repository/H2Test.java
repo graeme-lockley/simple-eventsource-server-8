@@ -26,7 +26,7 @@ class H2Test {
                 Fixtures.process(FixturesInput.fromLocation("resource:initial.yaml"));
 
         jdbi = Jdbi.create(fixtures.findHandler(JDBCHandler.class).get().connection());
-        h2 = new H2();
+        h2 = new H2(jdbi);
     }
 
 
