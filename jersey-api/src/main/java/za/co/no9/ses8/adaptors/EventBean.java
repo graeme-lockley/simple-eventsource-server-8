@@ -1,5 +1,7 @@
 package za.co.no9.ses8.adaptors;
 
+import za.co.no9.ses8.domain.Event;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
@@ -11,6 +13,7 @@ public class EventBean {
     public String name;
     public String content;
 
+
     public EventBean() {
     }
 
@@ -20,5 +23,10 @@ public class EventBean {
         this.when = when;
         this.name = name;
         this.content = content;
+    }
+
+
+    public static final EventBean from(Event event) {
+        return new EventBean(event.id, event.when, event.name, event.content);
     }
 }

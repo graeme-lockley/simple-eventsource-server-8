@@ -28,7 +28,7 @@ public class API {
         Event event =
                 unitOfWork.saveEvent(newEvent.name, newEvent.content);
 
-        return new EventBean(event.id, event.when, event.name, event.content);
+        return EventBean.from(event);
     }
 
 
@@ -40,7 +40,7 @@ public class API {
 
         return unitOfWork
                 .events()
-                .map(event -> new EventBean(event.id, event.when, event.name, event.content))
+                .map(EventBean::from)
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +54,7 @@ public class API {
 
         return unitOfWork
                 .event(id)
-                .map(event -> Response.status(Response.Status.OK).expires(calculateExpires()).entity(new EventBean(event.id, event.when, event.name, event.content)).build())
+                .map(event -> Response.status(Response.Status.OK).expires(calculateExpires()).entity(EventBean.from(event)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 

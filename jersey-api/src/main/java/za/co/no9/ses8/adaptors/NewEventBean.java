@@ -7,10 +7,11 @@ public class NewEventBean {
     public String name;
     public String content;
 
+
     public NewEventBean() {
     }
 
-    
+
     public NewEventBean(String name, String content) {
         this.name = name;
         this.content = content;
