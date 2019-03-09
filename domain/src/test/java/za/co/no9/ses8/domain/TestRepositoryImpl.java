@@ -1,6 +1,7 @@
 package za.co.no9.ses8.domain;
 
 import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -9,22 +10,35 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class TestRepositoryImpl implements Repository<TestContextImpl> {
+public class TestRepositoryImpl implements Repository {
     private List<Event> savedEvents =
             new ArrayList<>();
 
     private int idCounter =
             0;
 
-
     @Override
-    public TestContextImpl newContext() {
-        return null;
+    public UnitOfWork newUnitOfWork() {
+        return new UnitOfWork() {
+            @Override
+            public Event saveEvent(String eventName, String content) {
+                return TestRepositoryImpl.this.saveEvent(eventName, content);
+            }
+
+            @Override
+            public Iterator<Event> events() {
+                return TestRepositoryImpl.this.events();
+            }
+
+            @Override
+            public Iterator<Event> eventsFrom(int id) {
+                return TestRepositoryImpl.this.eventsFrom(id);
+            }
+        };
     }
 
 
-    @Override
-    public Event saveEvent(TestContextImpl ctx, String eventName, String content) {
+    private Event saveEvent(String eventName, String content) {
         Event detail =
                 new Event(idCounter, Date.from(Instant.now()), eventName, content);
 
@@ -34,14 +48,12 @@ public class TestRepositoryImpl implements Repository<TestContextImpl> {
         return detail;
     }
 
-    @Override
-    public Iterator<Event> events(TestContextImpl ctx) {
+    private Iterator<Event> events() {
         return savedEvents.iterator();
     }
 
 
-    @Override
-    public Iterator<Event> eventsFrom(TestContextImpl ctx, int id) {
+    private Iterator<Event> eventsFrom(int id) {
         int index =
                 0;
 

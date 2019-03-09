@@ -1,23 +1,39 @@
 package za.co.no9.ses8.domain;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.util.Iterator;
 
 
 class ServicesTest {
-    private Services<TestContextImpl> services =
-            new TestServicesImpl();
+    private Services services;
+
+    private UnitOfWork unitOfWork;
+
+
+    @BeforeEach
+    void beforeEach() {
+        services =
+                new Services();
+
+        TestRepositoryImpl repository =
+                new TestRepositoryImpl();
+
+        unitOfWork =
+                repository.newUnitOfWork();
+    }
 
 
     @Test
     void publishAnEvent() {
         Event event1 =
-                services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+                services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
 
         Event event2 =
-                services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+                services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
 
         Assertions.assertEquals(0, event1.id);
         Assertions.assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content.toString());
@@ -30,7 +46,7 @@ class ServicesTest {
     @Test
     void allEventsOverEmptyStream() {
         Iterator<Event> events =
-                services.events(TestContextImpl.INSTANCE);
+                services.events(unitOfWork);
 
         Assertions.assertFalse(events.hasNext());
     }
@@ -38,12 +54,12 @@ class ServicesTest {
 
     @Test
     void eventsOverNoneEmptyStream() {
-        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Iterator<Event> events =
-                services.events(TestContextImpl.INSTANCE);
+                services.events(unitOfWork);
 
         assertNextName(events, 0, "CustomerAdded{name='Luke Skywalker'}");
         assertNextName(events, 1, "CustomerAdded{name='Ben Kenobi'}");
@@ -56,7 +72,7 @@ class ServicesTest {
     @Test
     void eventsFromOverEmptyStream() {
         Iterator<Event> events =
-                services.eventsFrom(TestContextImpl.INSTANCE, 1);
+                services.eventsFrom(unitOfWork, 1);
 
         Assertions.assertFalse(events.hasNext());
     }
@@ -64,12 +80,12 @@ class ServicesTest {
 
     @Test
     void eventsFromOverNonEmptyStream() {
-        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.publish(TestContextImpl.INSTANCE, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Iterator<Event> events =
-                services.eventsFrom(TestContextImpl.INSTANCE, 1);
+                services.eventsFrom(unitOfWork, 1);
 
         assertNextName(events, 2, "CustomerAdded{name='Leia Organa'}");
 

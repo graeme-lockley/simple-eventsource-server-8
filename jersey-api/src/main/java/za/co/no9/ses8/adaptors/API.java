@@ -2,6 +2,7 @@ package za.co.no9.ses8.adaptors;
 
 import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -12,16 +13,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Path("events")
-public class API<T> {
+public class API {
     @Inject
-    public Repository<T> repository;
+    public Repository repository;
 
 
     @GET
     @Produces("application/json")
     public List<EventBean> getEvents() {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
         Iterator<Event> events =
-                repository.events(repository.newContext());
+                unitOfWork.events();
 
         return map(events);
     }

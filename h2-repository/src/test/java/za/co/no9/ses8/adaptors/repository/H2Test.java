@@ -9,6 +9,7 @@ import za.co.no9.jfixture.Fixtures;
 import za.co.no9.jfixture.FixturesInput;
 import za.co.no9.jfixture.JDBCHandler;
 import za.co.no9.ses8.domain.Event;
+import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,16 +18,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class H2Test {
-    private Jdbi jdbi;
-    private H2 h2;
+    private UnitOfWork unitOfWork;
 
     @BeforeEach
     void before() throws IOException, FixtureException {
         Fixtures fixtures =
                 Fixtures.process(FixturesInput.fromLocation("resource:initial.yaml"));
 
-        jdbi = Jdbi.create(fixtures.findHandler(JDBCHandler.class).get().connection());
-        h2 = new H2(jdbi);
+        Jdbi jdbi =
+                Jdbi.create(fixtures.findHandler(JDBCHandler.class).get().connection());
+
+        H2 h2 =
+                new H2(jdbi);
+
+        unitOfWork = h2.newUnitOfWork();
     }
 
 
@@ -53,7 +58,7 @@ class H2Test {
         saveEvent("R2D2");
 
         Iterator<Event> events =
-                h2.events(jdbi);
+                unitOfWork.events();
 
         assertNextName(events, 1, "CustomerAdded{name='Luke Skywalker'}");
         assertNextName(events, 2, "CustomerAdded{name='Han Solo'}");
@@ -70,7 +75,7 @@ class H2Test {
         saveEvent("R2D2");
 
         Iterator<Event> events =
-                h2.eventsFrom(jdbi, 2);
+                unitOfWork.eventsFrom(2);
 
         assertNextName(events, 3, "CustomerAdded{name='R2D2'}");
 
@@ -89,6 +94,6 @@ class H2Test {
     }
 
     private Event saveEvent(String name) {
-        return h2.saveEvent(jdbi, "CustomerAdded", new CustomerAdded(name).toString());
+        return unitOfWork.saveEvent("CustomerAdded", new CustomerAdded(name).toString());
     }
 }

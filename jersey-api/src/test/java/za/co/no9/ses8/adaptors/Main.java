@@ -29,7 +29,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        final Repository<TestContextImpl> repository =
+        final Repository repository =
                 new TestRepositoryImpl();
 
         final HttpServer server =

@@ -1,23 +1,21 @@
 package za.co.no9.ses8.domain;
 
-import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.util.Iterator;
 
-public abstract class Services<T> {
-    protected abstract Repository<T> repository();
-
-
-    public Event publish(T ctx, String eventName, String content) {
-        return repository().saveEvent(ctx, eventName, content);
+public class Services {
+    public Event publish(UnitOfWork unitOfWork, String eventName, String content) {
+        return unitOfWork.saveEvent(eventName, content);
     }
 
 
-    public Iterator<Event> events(T ctx) {
-        return repository().events(ctx);
+    public Iterator<Event> events(UnitOfWork unitOfWork) {
+        return unitOfWork.events();
     }
 
-    public Iterator<Event> eventsFrom(T ctx, int id) {
-        return repository().eventsFrom(ctx, id);
+
+    public Iterator<Event> eventsFrom(UnitOfWork unitOfWork, int id) {
+        return unitOfWork.eventsFrom(id);
     }
 }

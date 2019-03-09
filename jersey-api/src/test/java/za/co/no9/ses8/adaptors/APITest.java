@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class APITest {
-    private Repository<TestContextImpl> repository;
+    private Repository repository;
 
     private HttpServer server;
     private WebTarget target;
@@ -42,8 +43,11 @@ class APITest {
 
     @Test
     void events() {
-        repository.saveEvent(TestContextImpl.INSTANCE, "CustomerAdded", "{name: \"Luke Skywalker\"}");
-        repository.saveEvent(TestContextImpl.INSTANCE, "CustomerAdded", "{name: \"Ben Solo\"}");
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
 
         List<EventBean> response =
                 target.path("events").request().get(new GenericType<List<EventBean>>() {
