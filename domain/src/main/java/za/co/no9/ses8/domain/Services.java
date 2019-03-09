@@ -2,7 +2,7 @@ package za.co.no9.ses8.domain;
 
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class Services {
     public Event publish(UnitOfWork unitOfWork, String eventName, String content) {
@@ -10,12 +10,12 @@ public class Services {
     }
 
 
-    public Iterator<Event> events(UnitOfWork unitOfWork) {
+    public Stream<Event> events(UnitOfWork unitOfWork) {
         return unitOfWork.events();
     }
 
 
-    public Iterator<Event> eventsFrom(UnitOfWork unitOfWork, int id) {
+    public Stream<Event> eventsFrom(UnitOfWork unitOfWork, int id) {
         return unitOfWork.eventsFrom(id);
     }
 }

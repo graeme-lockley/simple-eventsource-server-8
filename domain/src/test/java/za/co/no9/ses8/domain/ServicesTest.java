@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 
 class ServicesTest {
@@ -45,10 +45,10 @@ class ServicesTest {
 
     @Test
     void allEventsOverEmptyStream() {
-        Iterator<Event> events =
+        Stream<Event> events =
                 services.events(unitOfWork);
 
-        Assertions.assertFalse(events.hasNext());
+        Assertions.assertEquals(0, events.count());
     }
 
 
@@ -58,23 +58,27 @@ class ServicesTest {
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
-        Iterator<Event> events =
+        Stream<Event> events =
                 services.events(unitOfWork);
 
-        assertNextName(events, 0, "CustomerAdded{name='Luke Skywalker'}");
-        assertNextName(events, 1, "CustomerAdded{name='Ben Kenobi'}");
-        assertNextName(events, 2, "CustomerAdded{name='Leia Organa'}");
+        Event[] eventsArray =
+                events.toArray(Event[]::new);
 
-        Assertions.assertFalse(events.hasNext());
+        Assertions.assertEquals(3, eventsArray.length);
+
+        assertEventEquals(eventsArray[0], 0, "CustomerAdded{name='Luke Skywalker'}");
+        assertEventEquals(eventsArray[1], 1, "CustomerAdded{name='Ben Kenobi'}");
+        assertEventEquals(eventsArray[2], 2, "CustomerAdded{name='Leia Organa'}");
+
     }
 
 
     @Test
     void eventsFromOverEmptyStream() {
-        Iterator<Event> events =
+        Stream<Event> events =
                 services.eventsFrom(unitOfWork, 1);
 
-        Assertions.assertFalse(events.hasNext());
+        Assertions.assertEquals(0, events.count());
     }
 
 
@@ -84,21 +88,20 @@ class ServicesTest {
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
-        Iterator<Event> events =
+        Stream<Event> events =
                 services.eventsFrom(unitOfWork, 1);
 
-        assertNextName(events, 2, "CustomerAdded{name='Leia Organa'}");
+        Event[] eventsArray =
+                events.toArray(Event[]::new);
 
-        Assertions.assertFalse(events.hasNext());
+
+        Assertions.assertEquals(1, eventsArray.length);
+
+        assertEventEquals(eventsArray[0], 2, "CustomerAdded{name='Leia Organa'}");
     }
 
 
-    private void assertNextName(Iterator<Event> events, int id, String content) {
-        Assertions.assertTrue(events.hasNext());
-
-        Event event =
-                events.next();
-
+    private void assertEventEquals(Event event, int id, String content) {
         Assertions.assertEquals(id, event.id);
         Assertions.assertEquals("CustomerAdded", event.eventName);
         Assertions.assertEquals(content, event.content);

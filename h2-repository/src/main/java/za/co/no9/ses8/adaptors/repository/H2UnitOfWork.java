@@ -2,13 +2,11 @@ package za.co.no9.ses8.adaptors.repository;
 
 import org.jdbi.v3.core.Jdbi;
 import za.co.no9.ses8.domain.Event;
-import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
     private final Jdbi jdbi;
@@ -32,19 +30,19 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
 
 
     @Override
-    public Iterator<Event> events() {
+    public Stream<Event> events() {
         return jdbi.withHandle(handle -> handle
                         .createQuery("select id, when, name, content from event order by id")
                         .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
-                        .list()).iterator();
+                        .stream());
     }
 
 
     @Override
-    public Iterator<Event> eventsFrom(int id) {
+    public Stream<Event> eventsFrom(int id) {
         return jdbi.withHandle(handle -> handle
                 .select("select id, when, name, content from event where id > ? order by id", id)
                 .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
-                .list()).iterator();
+                .stream());
     }
 }

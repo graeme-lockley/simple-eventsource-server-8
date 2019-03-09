@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 public class TestRepositoryImpl implements Repository {
@@ -27,12 +29,12 @@ public class TestRepositoryImpl implements Repository {
             }
 
             @Override
-            public Iterator<Event> events() {
+            public Stream<Event> events() {
                 return TestRepositoryImpl.this.events();
             }
 
             @Override
-            public Iterator<Event> eventsFrom(int id) {
+            public Stream<Event> eventsFrom(int id) {
                 return TestRepositoryImpl.this.eventsFrom(id);
             }
         };
@@ -50,12 +52,12 @@ public class TestRepositoryImpl implements Repository {
     }
 
 
-    private Iterator<Event> events() {
-        return savedEvents.iterator();
+    private Stream<Event> events() {
+        return savedEvents.stream();
     }
 
 
-    private Iterator<Event> eventsFrom(int id) {
+    private Stream<Event> eventsFrom(int id) {
         int index =
                 0;
 
@@ -67,10 +69,16 @@ public class TestRepositoryImpl implements Repository {
                 if (savedEvents.get(index).id <= id) {
                     index += 1;
                 } else {
-                    return savedEvents.listIterator(index);
+                    Iterator<Event> sourceIterator =
+                            savedEvents.listIterator(index);
+
+                    Iterable<Event> iterable =
+                            () -> sourceIterator;
+
+                    return StreamSupport.stream(iterable.spliterator(), false);
                 }
             } else {
-                return new ArrayList<Event>().iterator();
+                return Stream.empty();
             }
         }
     }

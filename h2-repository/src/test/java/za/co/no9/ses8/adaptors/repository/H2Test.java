@@ -12,7 +12,7 @@ import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -57,14 +57,17 @@ class H2Test {
         saveEvent("Han Solo");
         saveEvent("R2D2");
 
-        Iterator<Event> events =
+        Stream<Event> events =
                 unitOfWork.events();
 
-        assertNextName(events, 1, "CustomerAdded{name='Luke Skywalker'}");
-        assertNextName(events, 2, "CustomerAdded{name='Han Solo'}");
-        assertNextName(events, 3, "CustomerAdded{name='R2D2'}");
+        Event[] eventsArray =
+                events.toArray(Event[]::new);
 
-        Assertions.assertFalse(events.hasNext());
+        assertEquals(3, eventsArray.length);
+
+        assertEventEquals(eventsArray[0], 1, "CustomerAdded{name='Luke Skywalker'}");
+        assertEventEquals(eventsArray[1], 2, "CustomerAdded{name='Han Solo'}");
+        assertEventEquals(eventsArray[2], 3, "CustomerAdded{name='R2D2'}");
     }
 
 
@@ -74,24 +77,24 @@ class H2Test {
         saveEvent("Han Solo");
         saveEvent("R2D2");
 
-        Iterator<Event> events =
+        Stream<Event> events =
                 unitOfWork.eventsFrom(2);
 
-        assertNextName(events, 3, "CustomerAdded{name='R2D2'}");
+        Event[] eventsArray =
+                events.toArray(Event[]::new);
 
-        Assertions.assertFalse(events.hasNext());
+
+        assertEquals(1, eventsArray.length);
+
+        assertEventEquals(eventsArray[0], 3, "CustomerAdded{name='R2D2'}");
     }
 
 
-    private void assertNextName(Iterator<Event> events, int id, String content) {
-        Assertions.assertTrue(events.hasNext());
-
-        Event event =
-                events.next();
-
+    private void assertEventEquals(Event event, int id, String content) {
         Assertions.assertEquals(id, event.id);
         Assertions.assertEquals(content, event.content);
     }
+
 
     private Event saveEvent(String name) {
         return unitOfWork.saveEvent("CustomerAdded", new CustomerAdded(name).toString());
