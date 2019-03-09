@@ -132,7 +132,7 @@ class ServicesTest {
 
     private void assertEventEquals(Event event, int id, String content) {
         Assertions.assertEquals(id, event.id);
-        Assertions.assertEquals("CustomerAdded", event.eventName);
+        Assertions.assertEquals("CustomerAdded", event.name);
         Assertions.assertEquals(content, event.content);
     }
 
