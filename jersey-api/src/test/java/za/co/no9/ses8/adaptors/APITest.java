@@ -133,6 +133,25 @@ class APITest {
 
 
     @Test
+    void eventsFromWithPageSize() {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        populateEvents(unitOfWork, "SomeEventHappened", 200);
+
+        List<EventBean> response =
+                target.path("events")
+                        .queryParam("start", 50)
+                        .queryParam("pagesize", 10)
+                        .request().get(new GenericType<List<EventBean>>() {
+                });
+
+        assertEquals(10, response.size());
+        assertEquals(51, response.get(0).id);
+    }
+
+
+    @Test
     void saveEvents() {
         NewEventBean input =
                 new NewEventBean("CharacterAdded", "{name: \"Luke Skywalker\"}");

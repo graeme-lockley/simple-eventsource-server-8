@@ -54,22 +54,21 @@ class ServicesTest {
 
 
     @Test
-    void eventsOverNoneEmptyStream() {
+    void eventsOverNoneEmptyStreamWithPageSize() {
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.events(unitOfWork, 100);
+                services.events(unitOfWork, 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
 
-        Assertions.assertEquals(3, eventsArray.length);
+        Assertions.assertEquals(2, eventsArray.length);
 
         assertEventEquals(eventsArray[0], 0, "CustomerAdded{name='Luke Skywalker'}");
         assertEventEquals(eventsArray[1], 1, "CustomerAdded{name='Ben Kenobi'}");
-        assertEventEquals(eventsArray[2], 2, "CustomerAdded{name='Leia Organa'}");
 
     }
 
@@ -77,28 +76,31 @@ class ServicesTest {
     @Test
     void eventsFromOverEmptyStream() {
         Stream<Event> events =
-                services.eventsFrom(unitOfWork, 1);
+                services.eventsFrom(unitOfWork, 1, 100);
 
         Assertions.assertEquals(0, events.count());
     }
 
 
     @Test
-    void eventsFromOverNonEmptyStream() {
+    void eventsFromOverNonEmptyStreamWithPageSize() {
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Han Solo"));
+        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Solo"));
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.eventsFrom(unitOfWork, 1);
+                services.eventsFrom(unitOfWork, 1, 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
 
 
-        Assertions.assertEquals(1, eventsArray.length);
+        Assertions.assertEquals(2, eventsArray.length);
 
-        assertEventEquals(eventsArray[0], 2, "CustomerAdded{name='Leia Organa'}");
+        assertEventEquals(eventsArray[0], 2, "CustomerAdded{name='Han Solo'}");
+        assertEventEquals(eventsArray[1], 3, "CustomerAdded{name='Ben Solo'}");
     }
 
 

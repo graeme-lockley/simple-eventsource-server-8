@@ -45,7 +45,7 @@ public class API {
                     .collect(Collectors.toList());
         } else {
             return unitOfWork
-                    .eventsFrom(start)
+                    .eventsFrom(start, pageSize)
                     .map(EventBean::from)
                     .collect(Collectors.toList());
         }

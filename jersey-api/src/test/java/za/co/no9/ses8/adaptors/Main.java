@@ -51,7 +51,7 @@ public class Main {
                 repository.newUnitOfWork();
 
         int lp = 0;
-        while (lp < 10000) {
+        while (lp < 1000000) {
             switch (lp % 3) {
                 case 0:
                     unitOfWork.saveEvent("CustomerAdded",

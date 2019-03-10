@@ -36,8 +36,8 @@ public class TestRepositoryImpl implements Repository {
             }
 
             @Override
-            public Stream<Event> eventsFrom(int id) {
-                return TestRepositoryImpl.this.eventsFrom(id);
+            public Stream<Event> eventsFrom(int id, int pageSize) {
+                return TestRepositoryImpl.this.eventsFrom(id, pageSize);
             }
         };
     }
@@ -64,7 +64,7 @@ public class TestRepositoryImpl implements Repository {
     }
 
 
-    private Stream<Event> eventsFrom(int id) {
+    private Stream<Event> eventsFrom(int id, int pageSize) {
         int index =
                 0;
 
@@ -82,7 +82,7 @@ public class TestRepositoryImpl implements Repository {
                     Iterable<Event> iterable =
                             () -> sourceIterator;
 
-                    return StreamSupport.stream(iterable.spliterator(), false);
+                    return StreamSupport.stream(iterable.spliterator(), false).limit(pageSize);
                 }
             } else {
                 return Stream.empty();
