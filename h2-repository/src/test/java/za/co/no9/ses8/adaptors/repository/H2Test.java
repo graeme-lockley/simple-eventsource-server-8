@@ -101,6 +101,25 @@ class H2Test {
 
 
     @Test
+    void eventsWithPageSize() {
+        saveEvent("Luke Skywalker");
+        saveEvent("Han Solo");
+        saveEvent("R2D2");
+
+        Stream<Event> events =
+                unitOfWork.events(2);
+
+        Event[] eventsArray =
+                events.toArray(Event[]::new);
+
+        assertEquals(2, eventsArray.length);
+
+        assertEventEquals(eventsArray[0], 1, "CustomerAdded{name='Luke Skywalker'}");
+        assertEventEquals(eventsArray[1], 2, "CustomerAdded{name='Han Solo'}");
+    }
+
+
+    @Test
     void eventsFrom() {
         saveEvent("Luke Skywalker");
         saveEvent("Han Solo");
