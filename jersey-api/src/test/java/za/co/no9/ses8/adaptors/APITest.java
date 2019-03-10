@@ -94,6 +94,30 @@ class APITest {
 
 
     @Test
+    void eventsFrom() {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        unitOfWork.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
+
+        List<EventBean> response =
+                target.path("events")
+                        .queryParam("start", 1)
+                        .request()
+                        .get(new GenericType<List<EventBean>>() {
+                        });
+
+        assertEquals(2, response.size());
+
+        assertEventEquals("CustomerAdded", "Han Solo", response.get(0));
+        assertEventEquals("CustomerAdded", "Leia Organa", response.get(1));
+    }
+
+
+    @Test
     void eventsWithDefaultPageSize() {
         UnitOfWork unitOfWork =
                 repository.newUnitOfWork();
