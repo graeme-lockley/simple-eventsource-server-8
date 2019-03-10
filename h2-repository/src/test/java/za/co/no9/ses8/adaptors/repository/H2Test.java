@@ -54,29 +54,29 @@ class H2Test {
 
     @Test
     void knownEvent() {
-            saveEvent("Luke Skywalker");
-            saveEvent("Han Solo");
-            saveEvent("R2D2");
+        saveEvent("Luke Skywalker");
+        saveEvent("Han Solo");
+        saveEvent("R2D2");
 
-            Optional<Event> event =
-                    unitOfWork.event(2);
+        Optional<Event> event =
+                unitOfWork.event(2);
 
-            assertTrue(event.isPresent());
+        assertTrue(event.isPresent());
 
-            assertEventEquals(event.get(), 2, "CustomerAdded{name='Han Solo'}");
+        assertEventEquals(event.get(), 2, "CustomerAdded{name='Han Solo'}");
     }
 
 
     @Test
     void unKnownEvent() {
-            saveEvent("Luke Skywalker");
-            saveEvent("Han Solo");
-            saveEvent("R2D2");
+        saveEvent("Luke Skywalker");
+        saveEvent("Han Solo");
+        saveEvent("R2D2");
 
-            Optional<Event> event =
-                    unitOfWork.event(10);
+        Optional<Event> event =
+                unitOfWork.event(10);
 
-            assertFalse(event.isPresent());
+        assertFalse(event.isPresent());
     }
 
 
