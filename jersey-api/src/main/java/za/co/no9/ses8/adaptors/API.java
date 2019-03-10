@@ -34,14 +34,21 @@ public class API {
 
     @GET
     @Produces("application/json")
-    public List<EventBean> getEvents() {
+    public List<EventBean> getEvents(@QueryParam("start") Integer start, @QueryParam("pagesize") @DefaultValue("100") int pageSize) {
         UnitOfWork unitOfWork =
                 repository.newUnitOfWork();
 
-        return unitOfWork
-                .events()
-                .map(EventBean::from)
-                .collect(Collectors.toList());
+        if (start == null) {
+            return unitOfWork
+                    .events(pageSize)
+                    .map(EventBean::from)
+                    .collect(Collectors.toList());
+        } else {
+            return unitOfWork
+                    .eventsFrom(start)
+                    .map(EventBean::from)
+                    .collect(Collectors.toList());
+        }
     }
 
 

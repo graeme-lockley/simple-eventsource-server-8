@@ -94,6 +94,21 @@ class APITest {
 
 
     @Test
+    void eventsWithDefaultPageSize() {
+        UnitOfWork unitOfWork =
+                repository.newUnitOfWork();
+
+        populateEvents(unitOfWork, "SomeEventHappened", 200);
+
+        List<EventBean> response =
+                target.path("events").request().get(new GenericType<List<EventBean>>() {
+                });
+
+        assertEquals(100, response.size());
+    }
+
+
+    @Test
     void saveEvents() {
         NewEventBean input =
                 new NewEventBean("CharacterAdded", "{name: \"Luke Skywalker\"}");
@@ -108,5 +123,12 @@ class APITest {
     private void assertEventEquals(String eventName, String name, EventBean event) {
         assertEquals(eventName, event.name);
         assertEquals("{name: \"" + name + "\"}", event.content);
+    }
+
+
+    private void populateEvents(UnitOfWork unitOfWork, String name, int number) {
+        for (int lp = 0; lp < number; lp += 1) {
+            unitOfWork.saveEvent(name, "{count: " + lp + "}");
+        }
     }
 }

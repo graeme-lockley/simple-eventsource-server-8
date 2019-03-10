@@ -87,7 +87,7 @@ class H2Test {
         saveEvent("R2D2");
 
         Stream<Event> events =
-                unitOfWork.events();
+                unitOfWork.events(100);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);

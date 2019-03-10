@@ -40,9 +40,9 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
 
 
     @Override
-    public Stream<Event> events() {
+    public Stream<Event> events(int pageSize) {
         return jdbi.withHandle(handle -> handle
-                        .createQuery("select id, when, name, content from event order by id")
+                        .select("select id, when, name, content from event order by id limit ?", pageSize)
                         .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
                         .stream());
     }

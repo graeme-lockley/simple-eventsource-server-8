@@ -37,17 +37,17 @@ class ServicesTest {
                 services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
 
         Assertions.assertEquals(0, event1.id);
-        Assertions.assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content.toString());
+        Assertions.assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content);
 
         Assertions.assertEquals(1, event2.id);
-        Assertions.assertEquals("CustomerAdded{name='Ben Kenobi'}", event2.content.toString());
+        Assertions.assertEquals("CustomerAdded{name='Ben Kenobi'}", event2.content);
     }
 
 
     @Test
     void allEventsOverEmptyStream() {
         Stream<Event> events =
-                services.events(unitOfWork);
+                services.events(unitOfWork, 100);
 
         Assertions.assertEquals(0, events.count());
     }
@@ -60,7 +60,7 @@ class ServicesTest {
         services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.events(unitOfWork);
+                services.events(unitOfWork, 100);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
