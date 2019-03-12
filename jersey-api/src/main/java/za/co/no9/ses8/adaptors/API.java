@@ -1,5 +1,6 @@
 package za.co.no9.ses8.adaptors;
 
+import io.swagger.annotations.Api;
 import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Api(value = "/events", description = "Operations to access and append to the event stream.")
 @Path("events")
 public class API {
     @Inject

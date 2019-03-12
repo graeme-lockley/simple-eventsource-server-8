@@ -1,6 +1,9 @@
 package za.co.no9.ses8.adaptors;
 
+import io.swagger.jaxrs.config.BeanConfig;
+import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -18,6 +21,14 @@ public class Main {
 
 
     public static HttpServer startServer(Repository repository) {
+        String resources = "za.co.no9.ses8.adaptors";
+        BeanConfig beanConfig = new BeanConfig();
+        beanConfig.setVersion("1.0.2");
+        beanConfig.setSchemes(new String[]{"http"});
+        beanConfig.setBasePath("/api/");
+        beanConfig.setResourcePackage(resources);
+        beanConfig.setScan(true);
+
         final ResourceConfig rc =
                 new ResourceConfig()
                         .register(new AbstractBinder() {
@@ -25,7 +36,10 @@ public class Main {
                             protected void configure() {
                                 bind(repository).to(Repository.class);
                             }
-                        }).packages("za.co.no9.ses8.adaptors");
+                        })
+                        .register(io.swagger.jaxrs.listing.ApiListingResource.class)
+                        .register(io.swagger.jaxrs.listing.SwaggerSerializers.class)
+                        .packages("za.co.no9.ses8.adaptors");
 
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
@@ -38,6 +52,13 @@ public class Main {
 
         final HttpServer server =
                 startServer(repository);
+
+        ClassLoader loader = Main.class.getClassLoader();
+        CLStaticHttpHandler docsHandler = new CLStaticHttpHandler(loader, "swagger-ui/");
+        docsHandler.setFileCacheEnabled(false);
+
+        ServerConfiguration cfg = server.getServerConfiguration();
+        cfg.addHttpHandler(docsHandler, "/");
 
         System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...", BASE_URI));
 
