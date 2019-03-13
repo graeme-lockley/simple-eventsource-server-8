@@ -29,6 +29,7 @@
         <module>domain</module>
         <module>jersey-api</module>
         <module>h2-repository</module>
+        <module>h2-jersey-application</module>
     </modules>
 
     <dependencies>
