@@ -44,7 +44,7 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
         return jdbi.withHandle(handle -> handle
                         .select("select id, when, name, content from event order by id limit ?", pageSize)
                         .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
-                        .stream());
+                        .list()).stream();
     }
 
 
@@ -53,6 +53,6 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
         return jdbi.withHandle(handle -> handle
                 .select("select id, when, name, content from event where id > ? order by id limit ?", id, pageSize)
                 .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
-                .stream());
+                .list()).stream();
     }
 }
