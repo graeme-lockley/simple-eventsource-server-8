@@ -25,4 +25,13 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
         <addAutoIncrement tableName="event" columnName="id" columnDataType="bigint" />
     </changeSet>
 
+    <changeSet id="2" author="bob">
+        <sqlFile dbms="h2"
+                 encoding="utf8"
+                 path="dummyevents-small.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"/>
+    </changeSet>
+
 </databaseChangeLog>
