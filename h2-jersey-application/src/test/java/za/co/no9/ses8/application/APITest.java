@@ -36,7 +36,7 @@ class APITest {
                 new Main(repository);
 
         target =
-                ClientBuilder.newClient().target(Main.BASE_URI);
+                ClientBuilder.newClient().target(Main.DEFAULT_BASE_URI);
     }
 
 

@@ -17,27 +17,47 @@ import java.net.URI;
 
 
 public class Main {
+    public static final String DEFAULT_BASE_URI =
+            "http://localhost:8080/api/";
+
+    private static final String DEFAULT_JDBC_URL =
+            "jdbc:h2:./h2-jersey-application/target/stream";
+
+    private static final String DEFAULT_JDBC_USER =
+            "sa";
+
+    private static final String DEFAULT_JDBC_PASS =
+            "";
+
+    private String baseURI;
     private HttpServer server;
     private Repository repository;
 
 
-    public Main(Repository repository) {
+    public Main(String baseURI, Repository repository) {
+        this.baseURI = baseURI;
         this.repository = repository;
 
         startup();
     }
 
 
-    public Main(String jdbcURL, String username, String password) {
-        this(new H2(Jdbi.create(jdbcURL, username, password)));
+    public Main(Repository repository) {
+        this(DEFAULT_BASE_URI, repository);
     }
 
 
-    static final String BASE_URI =
-            "http://localhost:8080/api/";
+    public Main(String baseURI, String jdbcURL, String username, String password) {
+        this(baseURI, new H2(Jdbi.create(jdbcURL, username, password)));
+    }
 
 
-    private void startServer() {
+    public String getBaseURI() {
+        return baseURI;
+    }
+
+
+    private HttpServer startServer() {
         String resources = "za.co.no9.ses8.adaptors";
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setVersion("1.0.2");
@@ -58,12 +78,12 @@ public class Main {
                         .register(io.swagger.jaxrs.listing.SwaggerSerializers.class)
                         .packages("za.co.no9.ses8.adaptors");
 
-        server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(baseURI), rc);
     }
 
 
     private void startup() {
-        startServer();
+        server = startServer();
 
         ClassLoader loader = Main.class.getClassLoader();
         CLStaticHttpHandler docsHandler = new CLStaticHttpHandler(loader, "swagger-ui/");
@@ -83,6 +103,7 @@ public class Main {
         Options options =
                 new Options();
 
+        options.addOption(new Option("uri", true, "The REST base URI"));
         options.addOption(new Option("dburl", true, "JDBC URL containing events table"));
         options.addOption(new Option("dbuser", true, "JDBC user"));
         options.addOption(new Option("dbpass", true, "JDBC user password"));
@@ -95,11 +116,12 @@ public class Main {
             (new HelpFormatter()).printHelp("Main", options);
         } else {
             Main main = new Main(
-                    cmd.getOptionValue("db", "jdbc:h2:./h2-jersey-application/target/stream"),
-                    cmd.getOptionValue("dbuser", "sa"),
-                    cmd.getOptionValue("dbpassword", ""));
+                    cmd.getOptionValue("uri", DEFAULT_BASE_URI),
+                    cmd.getOptionValue("db", DEFAULT_JDBC_URL),
+                    cmd.getOptionValue("dbuser", DEFAULT_JDBC_USER),
+                    cmd.getOptionValue("dbpassword", DEFAULT_JDBC_PASS));
 
-            System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...", BASE_URI));
+            System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...", main.getBaseURI()));
 
             System.in.read();
 
