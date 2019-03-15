@@ -1,6 +1,7 @@
 package za.co.no9.ses8.application;
 
 import io.swagger.jaxrs.config.BeanConfig;
+import org.apache.commons.cli.*;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
@@ -10,19 +11,33 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.jdbi.v3.core.Jdbi;
 import za.co.no9.ses8.adaptors.repository.H2;
 import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Random;
 
 
 public class Main {
-    public static final String BASE_URI =
+    private HttpServer server;
+    private Repository repository;
+
+
+    public Main(Repository repository) {
+        this.repository = repository;
+
+        startup();
+    }
+
+
+    public Main(String jdbcURL, String username, String password) {
+        this(new H2(Jdbi.create(jdbcURL, username, password)));
+    }
+
+
+    static final String BASE_URI =
             "http://localhost:8080/api/";
 
 
-    public static HttpServer startServer(Repository repository) {
+    private void startServer() {
         String resources = "za.co.no9.ses8.adaptors";
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setVersion("1.0.2");
@@ -43,18 +58,12 @@ public class Main {
                         .register(io.swagger.jaxrs.listing.SwaggerSerializers.class)
                         .packages("za.co.no9.ses8.adaptors");
 
-        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+        server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
-    public static void main(String[] args) throws IOException {
-        final Jdbi jdbi =
-                Jdbi.create("jdbc:h2:./h2-jersey-application/target/stream", "sa", "");
 
-        final Repository repository =
-                new H2(jdbi);
-
-        final HttpServer server =
-                startServer(repository);
+    private void startup() {
+        startServer();
 
         ClassLoader loader = Main.class.getClassLoader();
         CLStaticHttpHandler docsHandler = new CLStaticHttpHandler(loader, "swagger-ui/");
@@ -62,10 +71,39 @@ public class Main {
 
         ServerConfiguration cfg = server.getServerConfiguration();
         cfg.addHttpHandler(docsHandler, "/");
+    }
 
-        System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...", BASE_URI));
 
-        System.in.read();
+    public void shutdown() {
         server.shutdownNow();
+    }
+
+
+    public static void main(String[] args) throws IOException, ParseException {
+        Options options =
+                new Options();
+
+        options.addOption(new Option("dburl", true, "JDBC URL containing events table"));
+        options.addOption(new Option("dbuser", true, "JDBC user"));
+        options.addOption(new Option("dbpass", true, "JDBC user password"));
+        options.addOption(new Option("help", "Print this message"));
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse(options, args);
+
+        if (cmd.hasOption("help")) {
+            (new HelpFormatter()).printHelp("Main", options);
+        } else {
+            Main main = new Main(
+                    cmd.getOptionValue("db", "jdbc:h2:./h2-jersey-application/target/stream"),
+                    cmd.getOptionValue("dbuser", "sa"),
+                    cmd.getOptionValue("dbpassword", ""));
+
+            System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...", BASE_URI));
+
+            System.in.read();
+
+            main.shutdown();
+        }
     }
 }

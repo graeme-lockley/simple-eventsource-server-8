@@ -1,6 +1,5 @@
 package za.co.no9.ses8.application;
 
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class APITest {
     private Repository repository;
 
-    private HttpServer server;
+    private Main server;
     private WebTarget target;
 
 
@@ -34,7 +33,7 @@ class APITest {
                 new TestRepositoryImpl();
 
         server =
-                Main.startServer(repository);
+                new Main(repository);
 
         target =
                 ClientBuilder.newClient().target(Main.BASE_URI);
@@ -43,7 +42,7 @@ class APITest {
 
     @AfterEach
     void after() {
-        server.shutdownNow();
+        server.shutdown();
     }
 
 
