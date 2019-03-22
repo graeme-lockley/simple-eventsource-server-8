@@ -12,7 +12,7 @@ public class Services {
 
 
     public Stream<Event> events(UnitOfWork unitOfWork, int pageSize) {
-        return unitOfWork.events( pageSize);
+        return unitOfWork.events(pageSize);
     }
 
 
