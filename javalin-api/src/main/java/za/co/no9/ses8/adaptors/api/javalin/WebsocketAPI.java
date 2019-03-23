@@ -21,6 +21,7 @@ public class WebsocketAPI implements Observer {
 
     public WebsocketAPI(Services services) {
         this.services = services;
+        services.registerObserver(this);
     }
 
 
