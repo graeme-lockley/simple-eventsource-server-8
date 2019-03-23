@@ -3,16 +3,16 @@ package za.co.no9.ses8.application;
 import io.javalin.Javalin;
 import org.apache.commons.cli.*;
 import org.jdbi.v3.core.Jdbi;
-import za.co.no9.ses8.adaptors.rest.javalin.API;
 import za.co.no9.ses8.adaptors.repository.H2;
+import za.co.no9.ses8.adaptors.rest.javalin.API;
 import za.co.no9.ses8.domain.ports.Repository;
 
 import java.io.IOException;
 
 
 public class Main {
-    public static final String DEFAULT_BASE_URI =
-            "http://localhost:8080/api/";
+    public static final int DEFAULT_PORT =
+            8080;
 
     private static final String DEFAULT_JDBC_URL =
             "jdbc:h2:./h2-jersey-application/target/stream";
@@ -23,39 +23,28 @@ public class Main {
     private static final String DEFAULT_JDBC_PASS =
             "";
 
-    private String baseURI;
+    private int port;
     private Javalin server;
     private Repository repository;
 
 
-    public Main(String baseURI, Repository repository) {
-        this.baseURI = baseURI;
+    public Main(int port, Repository repository) {
+        this.port = port;
         this.repository = repository;
 
         startup();
     }
 
 
-    public Main(Repository repository) {
-        this(DEFAULT_BASE_URI, repository);
+    public Main(int port, String jdbcURL, String username, String password) {
+        this(port, new H2(Jdbi.create(jdbcURL, username, password)));
     }
 
 
-    public Main(String baseURI, String jdbcURL, String username, String password) {
-        this(baseURI, new H2(Jdbi.create(jdbcURL, username, password)));
-    }
-
-
-    public String getBaseURI() {
-        return baseURI;
-    }
-
-
-    static Javalin startServer(Repository repository) {
+    static Javalin startServer(Repository repository, int port) {
         Javalin javalin = Javalin
                 .create()
-                .port(8080)
-                .enableStaticFiles("swagger-ui/")
+                .port(port)
                 .disableStartupBanner()
                 .start();
 
@@ -66,7 +55,7 @@ public class Main {
 
 
     private void startup() {
-        server = startServer(repository);
+        server = startServer(repository, port);
     }
 
 
@@ -79,7 +68,7 @@ public class Main {
         Options options =
                 new Options();
 
-        options.addOption(new Option("uri", true, "The REST base URI"));
+        options.addOption(new Option("port", true, "API port"));
         options.addOption(new Option("dburl", true, "JDBC URL containing events table"));
         options.addOption(new Option("dbuser", true, "JDBC user"));
         options.addOption(new Option("dbpass", true, "JDBC user password"));
@@ -92,7 +81,7 @@ public class Main {
             (new HelpFormatter()).printHelp("Main", options);
         } else {
             Main main = new Main(
-                    cmd.getOptionValue("uri", DEFAULT_BASE_URI),
+                    Integer.parseInt(cmd.getOptionValue("port", Integer.toString(DEFAULT_PORT))),
                     cmd.getOptionValue("db", DEFAULT_JDBC_URL),
                     cmd.getOptionValue("dbuser", DEFAULT_JDBC_USER),
                     cmd.getOptionValue("dbpassword", DEFAULT_JDBC_PASS));

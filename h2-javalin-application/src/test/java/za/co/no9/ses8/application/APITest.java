@@ -31,6 +31,8 @@ class APITest {
     private Repository repository;
 
     private Javalin server;
+    
+    private String baseURI;
 
 
     @BeforeEach
@@ -39,7 +41,10 @@ class APITest {
                 new InMemory();
 
         server =
-                Main.startServer(repository);
+                Main.startServer(repository, Main.DEFAULT_PORT);
+        
+        baseURI = 
+                "http://localhost:" + Main.DEFAULT_PORT + "/api/";
     }
 
 
@@ -59,7 +64,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         String response =
-                Request.Get(Main.DEFAULT_BASE_URI + "events/2").execute().returnContent().asString();
+                Request.Get(baseURI + "events/2").execute().returnContent().asString();
 
         EventBean eventBean =
                 gson.fromJson(response, EventBean.class);
@@ -78,7 +83,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         Response response =
-                Request.Get(Main.DEFAULT_BASE_URI + "events/10").execute();
+                Request.Get(baseURI + "events/10").execute();
 
         Assertions.assertEquals(412, response.returnResponse().getStatusLine().getStatusCode());
     }
@@ -93,7 +98,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
 
         String response =
-                Request.Get(Main.DEFAULT_BASE_URI + "events").execute().returnContent().asString();
+                Request.Get(baseURI + "events").execute().returnContent().asString();
 
         List<EventBean> eventBeans =
                 toEventBeanList(response);
@@ -117,7 +122,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
 
         String response =
-                Request.Get(Main.DEFAULT_BASE_URI + "events?start=2").execute().returnContent().asString();
+                Request.Get(baseURI + "events?start=2").execute().returnContent().asString();
 
         List<EventBean> eventBeans =
                 toEventBeanList(response);
@@ -137,7 +142,7 @@ class APITest {
         populateEvents(unitOfWork, "SomeEventHappened", 200);
 
         String response =
-                Request.Get(Main.DEFAULT_BASE_URI + "events").execute().returnContent().asString();
+                Request.Get(baseURI + "events").execute().returnContent().asString();
 
         List<EventBean> eventBeans =
                 toEventBeanList(response);
@@ -154,7 +159,7 @@ class APITest {
         populateEvents(unitOfWork, "SomeEventHappened", 200);
 
         String response =
-                Request.Get(Main.DEFAULT_BASE_URI + "events?start=50&pagesize=10").execute().returnContent().asString();
+                Request.Get(baseURI + "events?start=50&pagesize=10").execute().returnContent().asString();
 
         List<EventBean> eventBeans =
                 toEventBeanList(response);
@@ -174,10 +179,10 @@ class APITest {
 
         // This is a piece of dummy Get code which causes the flow to wait until the server is ready.  For one or other
         // reason Post does not wait but then fails immediately.
-        Request.Get(Main.DEFAULT_BASE_URI + "events/10").execute();
+        Request.Get(baseURI + "events/10").execute();
 
         String response =
-                Request.Post(Main.DEFAULT_BASE_URI + "events").bodyString(content, ContentType.APPLICATION_JSON).execute().returnContent().asString();
+                Request.Post(baseURI + "events").bodyString(content, ContentType.APPLICATION_JSON).execute().returnContent().asString();
 
         EventBean eventBean =
                 gson.fromJson(response, EventBean.class);
