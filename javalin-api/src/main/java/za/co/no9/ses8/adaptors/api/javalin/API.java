@@ -2,12 +2,10 @@ package za.co.no9.ses8.adaptors.api.javalin;
 
 import com.google.gson.Gson;
 import io.javalin.Javalin;
-import io.swagger.annotations.Api;
 import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
-import javax.ws.rs.Path;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,14 +13,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-@Api(value = "/events", description = "Operations to access and append to the event stream.")
-@Path("events")
 public class API {
-    private static Gson gson =
+    private static final Gson gson =
             new Gson();
 
+    private final Repository repository;
 
-    static EventBean saveEvent(Repository repository, NewEventBean newEvent) {
+
+    public API(Repository repository) {
+        this.repository = repository;
+    }
+
+
+    EventBean saveEvent(NewEventBean newEvent) {
         UnitOfWork unitOfWork =
                 repository.newUnitOfWork();
 
@@ -33,7 +36,7 @@ public class API {
     }
 
 
-    static List<EventBean> getEvents(Repository repository, Optional<Integer> start, int pageSize) {
+    List<EventBean> getEvents(Optional<Integer> start, int pageSize) {
         return repository
                 .newUnitOfWork()
                 .events(start, pageSize)
@@ -42,7 +45,7 @@ public class API {
     }
 
 
-    static Optional<EventBean> getEvent(Repository repository, int id) {
+    Optional<EventBean> getEvent(int id) {
         UnitOfWork unitOfWork =
                 repository.newUnitOfWork();
 
@@ -63,8 +66,11 @@ public class API {
 
 
     public static Javalin addEndpoints(final Javalin server, final Repository repository) {
+        final API api =
+                new API(repository);
+
         server.get("/api/events/:id", ctx -> {
-            Optional<EventBean> event = getEvent(repository, Integer.parseInt(ctx.pathParam("id")));
+            Optional<EventBean> event = api.getEvent(Integer.parseInt(ctx.pathParam("id")));
 
             if (event.isPresent()) {
                 ctx.header("Content-Type", "application/json");
@@ -82,7 +88,7 @@ public class API {
                     Integer.parseInt(ctx.queryParam("pagesize", "100"));
 
             List<EventBean> events =
-                    getEvents(repository, start, pageSize);
+                    api.getEvents(start, pageSize);
 
             ctx.header("Content-Type", "application/json");
             ctx.result(gson.toJson(events));
@@ -93,7 +99,7 @@ public class API {
                     gson.fromJson(ctx.body(), NewEventBean.class);
 
             EventBean eventBean =
-                    saveEvent(repository, newEventBean);
+                    api.saveEvent(newEventBean);
 
             ctx.header("Content-Type", "application/json");
             ctx.result(gson.toJson(eventBean));
