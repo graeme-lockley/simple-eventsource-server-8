@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>za.co.no9</groupId>
-            <artifactId>ses8-memory-repository</artifactId>
+            <artifactId>ses8-inmemory-repository</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

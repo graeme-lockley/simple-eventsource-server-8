@@ -32,7 +32,7 @@
 
     <modules>
         <module>domain</module>
-        <module>memory-repository</module>
+        <module>inmemory-repository</module>
         <module>jersey-api</module>
         <module>javalin-api</module>
         <module>h2-repository</module>
