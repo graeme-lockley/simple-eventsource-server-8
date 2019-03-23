@@ -26,6 +26,8 @@ public class H2Poll implements Runnable {
     public void run() {
         lastEventID = latestEventID();
 
+        System.out.println("H2 Poll: " + lastEventID);
+
         while (true) {
             try {
                 Thread.sleep(sleepDuration);
@@ -33,11 +35,17 @@ public class H2Poll implements Runnable {
                 e.printStackTrace();
             }
 
-            int eventID = latestEventID();
+            try {
+                int eventID = latestEventID();
 
-            if (lastEventID != eventID) {
-                lastEventID = eventID;
-                notifyObservers();
+                System.out.println("H2 Poll: " + lastEventID + ": " + eventID);
+
+                if (lastEventID != eventID) {
+                    lastEventID = eventID;
+                    notifyObservers();
+                }
+            } catch (Throwable t) {
+                System.err.println("H2 Pool: Error: " + t.getMessage());
             }
         }
     }
