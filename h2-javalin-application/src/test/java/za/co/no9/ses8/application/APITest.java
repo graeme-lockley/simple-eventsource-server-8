@@ -10,15 +10,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import za.co.no9.ses8.adaptors.EventBean;
-import za.co.no9.ses8.adaptors.NewEventBean;
+import za.co.no9.ses8.adaptors.rest.javalin.EventBean;
+import za.co.no9.ses8.adaptors.rest.javalin.NewEventBean;
 import za.co.no9.ses8.adaptors.repository.InMemory;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;

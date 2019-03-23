@@ -1,4 +1,4 @@
-package za.co.no9.ses8.adaptors;
+package za.co.no9.ses8.adaptors.rest.jersey;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.jupiter.api.AfterEach;

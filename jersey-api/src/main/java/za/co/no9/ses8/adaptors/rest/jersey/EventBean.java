@@ -1,4 +1,4 @@
-package za.co.no9.ses8.adaptors;
+package za.co.no9.ses8.adaptors.rest.jersey;
 
 import za.co.no9.ses8.domain.Event;
 

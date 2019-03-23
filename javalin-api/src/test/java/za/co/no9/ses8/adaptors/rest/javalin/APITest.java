@@ -1,4 +1,4 @@
-package za.co.no9.ses8.adaptors;
+package za.co.no9.ses8.adaptors.rest.javalin;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
