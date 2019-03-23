@@ -6,10 +6,7 @@ import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -18,7 +15,6 @@ public class API {
             new Gson();
 
     private final Repository repository;
-
 
     public API(Repository repository) {
         this.repository = repository;

@@ -17,7 +17,7 @@ public class Main {
 
 
     static Javalin startServer(Repository repository) {
-        Consumer<WsHandler> wsHandlerConsumer = Bob.invoke();
+        Consumer<WsHandler> wsHandlerConsumer = new WebsocketAPI(repository).invoke();
 
         Javalin javalin = Javalin
                 .create()
@@ -96,19 +96,5 @@ public class Main {
         }
 
         return buffer.toString();
-    }
-
-    private static class Bob {
-        private static Consumer<WsHandler> invoke() {
-            return ws -> {
-                ws.onConnect(session -> System.out.println("Connected: [" + session.getId() + "]"));
-                ws.onMessage((session, message) -> {
-                    System.out.println("Received: " + session.getId() + ": " + message);
-                    session.getRemote().sendString("Echo: " + message + message);
-                });
-                ws.onClose((session, statusCode, reason) -> System.out.println("Closed: " + session.getId()));
-                ws.onError((session, throwable) -> System.out.println("Errored: " + session.getId()));
-            };
-        }
     }
 }
