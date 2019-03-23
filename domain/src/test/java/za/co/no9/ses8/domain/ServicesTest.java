@@ -31,10 +31,10 @@ class ServicesTest {
     @Test
     void publishAnEvent() {
         Event event1 =
-                services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+                services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
 
         Event event2 =
-                services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+                services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
 
         Assertions.assertEquals(0, event1.id);
         Assertions.assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content);
@@ -55,9 +55,9 @@ class ServicesTest {
 
     @Test
     void eventsOverNoneEmptyStreamWithPageSize() {
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
                 services.events(unitOfWork, 2);
@@ -84,11 +84,11 @@ class ServicesTest {
 
     @Test
     void eventsFromOverNonEmptyStreamWithPageSize() {
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Han Solo"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Solo"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Han Solo"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Solo"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
                 services.eventsFrom(unitOfWork, 1, 2);
@@ -106,9 +106,9 @@ class ServicesTest {
 
     @Test
     void knownEventDetail() {
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Optional<Event> event =
                 services.event(unitOfWork, 1);
@@ -121,9 +121,9 @@ class ServicesTest {
 
     @Test
     void unknownEventDetail() {
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.publish(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Optional<Event> event =
                 services.event(unitOfWork, 10);

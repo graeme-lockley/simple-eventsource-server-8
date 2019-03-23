@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Services {
-    public Event publish(UnitOfWork unitOfWork, String eventName, String content) {
+    public Event saveEvent(UnitOfWork unitOfWork, String eventName, String content) {
         return unitOfWork.saveEvent(eventName, content);
     }
 
