@@ -3,7 +3,6 @@ package za.co.no9.ses8.domain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -11,8 +10,6 @@ import java.util.stream.Stream;
 
 class ServicesTest {
     private Services services;
-
-    private UnitOfWork unitOfWork;
 
 
     @BeforeEach
@@ -22,19 +19,16 @@ class ServicesTest {
 
         services =
                 new Services(repository);
-
-        unitOfWork =
-                repository.newUnitOfWork();
     }
 
 
     @Test
     void publishAnEvent() {
         Event event1 =
-                services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
+                services.saveEvent("CustomerAdded", customerAddedEvent("Luke Skywalker"));
 
         Event event2 =
-                services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
+                services.saveEvent("CustomerAdded", customerAddedEvent("Ben Kenobi"));
 
         Assertions.assertEquals(0, event1.id);
         Assertions.assertEquals("CustomerAdded{name='Luke Skywalker'}", event1.content);
@@ -47,7 +41,7 @@ class ServicesTest {
     @Test
     void allEventsOverEmptyStream() {
         Stream<Event> events =
-                services.events(unitOfWork, Optional.empty(), 100);
+                services.events(Optional.empty(), 100);
 
         Assertions.assertEquals(0, events.count());
     }
@@ -55,12 +49,12 @@ class ServicesTest {
 
     @Test
     void eventsOverNoneEmptyStreamWithPageSize() {
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.events(unitOfWork, Optional.empty(), 2);
+                services.events(Optional.empty(), 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
@@ -76,7 +70,7 @@ class ServicesTest {
     @Test
     void eventsFromOverEmptyStream() {
         Stream<Event> events =
-                services.events(unitOfWork, Optional.of(1), 100);
+                services.events(Optional.of(1), 100);
 
         Assertions.assertEquals(0, events.count());
     }
@@ -84,14 +78,14 @@ class ServicesTest {
 
     @Test
     void eventsFromOverNonEmptyStreamWithPageSize() {
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Han Solo"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Solo"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Han Solo"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Ben Solo"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.events(unitOfWork, Optional.of(1), 2);
+                services.events(Optional.of(1), 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
@@ -106,12 +100,12 @@ class ServicesTest {
 
     @Test
     void knownEventDetail() {
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Optional<Event> event =
-                services.event(unitOfWork, 1);
+                services.event(1);
 
         Assertions.assertTrue(event.isPresent());
 
@@ -121,12 +115,12 @@ class ServicesTest {
 
     @Test
     void unknownEventDetail() {
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Luke Skywalker"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Ben Kenobi"));
-        services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Luke Skywalker"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Ben Kenobi"));
+        services.saveEvent("CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Optional<Event> event =
-                services.event(unitOfWork, 10);
+                services.event(10);
 
         Assertions.assertFalse(event.isPresent());
     }

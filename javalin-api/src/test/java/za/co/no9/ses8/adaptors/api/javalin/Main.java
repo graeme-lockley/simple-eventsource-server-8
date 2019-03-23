@@ -3,6 +3,7 @@ package za.co.no9.ses8.adaptors.api.javalin;
 import io.javalin.Javalin;
 import io.javalin.websocket.WsHandler;
 import za.co.no9.ses8.adaptors.repository.InMemory;
+import za.co.no9.ses8.domain.Services;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
@@ -16,8 +17,8 @@ public class Main {
             "http://localhost:8080/api/";
 
 
-    static Javalin startServer(Repository repository) {
-        Consumer<WsHandler> wsHandlerConsumer = new WebsocketAPI(repository).invoke();
+    static Javalin startServer(Services services) {
+        Consumer<WsHandler> wsHandlerConsumer = new WebsocketAPI(services).invoke();
 
         Javalin javalin = Javalin
                 .create()
@@ -27,19 +28,22 @@ public class Main {
                 .disableStartupBanner()
                 .start();
 
-        API.addEndpoints(javalin, repository);
+        API.addEndpoints(javalin, services);
 
         return javalin;
     }
 
     public static void main(String[] args) throws IOException {
-        final Repository repository =
+        InMemory repository =
                 new InMemory();
+
+        final Services services =
+                new Services(repository);
 
         insertRows(repository);
 
         final Javalin server =
-                startServer(repository);
+                startServer(services);
 
         System.out.println("Server running - hit enter to stop it...");
 

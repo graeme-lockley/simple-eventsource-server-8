@@ -13,8 +13,7 @@ import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.adaptors.api.javalin.EventBean;
 import za.co.no9.ses8.adaptors.api.javalin.NewEventBean;
 import za.co.no9.ses8.adaptors.repository.InMemory;
-import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
+import za.co.no9.ses8.domain.Services;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -28,7 +27,7 @@ class APITest {
     private Gson gson =
             new Gson();
 
-    private Repository repository;
+    private Services services;
 
     private Javalin server;
     
@@ -37,11 +36,11 @@ class APITest {
 
     @BeforeEach
     void before() {
-        repository =
-                new InMemory();
+        services =
+                new Services(new InMemory());
 
         server =
-                Main.startServer(repository, Main.DEFAULT_PORT);
+                Main.startServer(services, Main.DEFAULT_PORT);
         
         baseURI = 
                 "http://localhost:" + Main.DEFAULT_PORT + "/api/";
@@ -56,12 +55,9 @@ class APITest {
 
     @Test
     void knownEvent() throws IOException {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         String response =
                 Request.Get(baseURI + "events/2").execute().returnContent().asString();
@@ -75,12 +71,9 @@ class APITest {
 
     @Test
     void unknownEvent() throws IOException {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         Response response =
                 Request.Get(baseURI + "events/10").execute();
@@ -91,11 +84,8 @@ class APITest {
 
     @Test
     void events() throws IOException {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
 
         String response =
                 Request.Get(baseURI + "events").execute().returnContent().asString();
@@ -113,13 +103,10 @@ class APITest {
 
     @Test
     void eventsFrom() throws IOException {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
 
         String response =
                 Request.Get(baseURI + "events?start=2").execute().returnContent().asString();
@@ -136,10 +123,7 @@ class APITest {
 
     @Test
     void eventsWithDefaultPageSize() throws IOException {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        populateEvents(unitOfWork, "SomeEventHappened", 200);
+        populateEvents();
 
         String response =
                 Request.Get(baseURI + "events").execute().returnContent().asString();
@@ -153,10 +137,7 @@ class APITest {
 
     @Test
     void eventsFromWithPageSize() throws IOException {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        populateEvents(unitOfWork, "SomeEventHappened", 200);
+        populateEvents();
 
         String response =
                 Request.Get(baseURI + "events?start=50&pagesize=10").execute().returnContent().asString();
@@ -197,9 +178,9 @@ class APITest {
     }
 
 
-    private void populateEvents(UnitOfWork unitOfWork, String name, int number) {
-        for (int lp = 0; lp < number; lp += 1) {
-            unitOfWork.saveEvent(name, "{count: " + lp + "}");
+    private void populateEvents() {
+        for (int lp = 0; lp < 200; lp += 1) {
+            services.saveEvent("SomeEventHappened", "{count: " + lp + "}");
         }
     }
 

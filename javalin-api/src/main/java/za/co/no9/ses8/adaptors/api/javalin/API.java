@@ -3,10 +3,12 @@ package za.co.no9.ses8.adaptors.api.javalin;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import za.co.no9.ses8.domain.Event;
-import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
+import za.co.no9.ses8.domain.Services;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -14,27 +16,23 @@ public class API {
     private static final Gson gson =
             new Gson();
 
-    private final Repository repository;
+    private final Services services;
 
-    public API(Repository repository) {
-        this.repository = repository;
+    public API(Services services) {
+        this.services = services;
     }
 
 
     EventBean saveEvent(NewEventBean newEvent) {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
         Event event =
-                unitOfWork.saveEvent(newEvent.name, newEvent.content);
+                services.saveEvent(newEvent.name, newEvent.content);
 
         return EventBean.from(event);
     }
 
 
     List<EventBean> getEvents(Optional<Integer> start, int pageSize) {
-        return repository
-                .newUnitOfWork()
+        return services
                 .events(start, pageSize)
                 .map(EventBean::from)
                 .collect(Collectors.toList());
@@ -42,10 +40,7 @@ public class API {
 
 
     Optional<EventBean> getEvent(int id) {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        return unitOfWork
+        return services
                 .event(id)
                 .map(EventBean::from);
     }
@@ -61,9 +56,9 @@ public class API {
     }
 
 
-    public static Javalin addEndpoints(final Javalin server, final Repository repository) {
+    public static Javalin addEndpoints(final Javalin server, final Services services) {
         final API api =
-                new API(repository);
+                new API(services);
 
         server.get("/api/events/:id", ctx -> {
             Optional<EventBean> event = api.getEvent(Integer.parseInt(ctx.pathParam("id")));

@@ -8,6 +8,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import za.co.no9.ses8.adaptors.repository.InMemory;
+import za.co.no9.ses8.domain.Services;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
@@ -21,7 +22,7 @@ public class Main {
             "http://localhost:8080/api/";
 
 
-    public static HttpServer startServer(Repository repository) {
+    public static HttpServer startServer(Services services) {
         String resources = "za.co.no9.ses8.adaptors";
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setVersion("1.0.2");
@@ -35,7 +36,7 @@ public class Main {
                         .register(new AbstractBinder() {
                             @Override
                             protected void configure() {
-                                bind(repository).to(Repository.class);
+                                bind(services).to(Services.class);
                             }
                         })
                         .register(io.swagger.jaxrs.listing.ApiListingResource.class)
@@ -49,10 +50,13 @@ public class Main {
         final Repository repository =
                 new InMemory();
 
+        final Services services =
+                new Services(repository);
+
         insertRows(repository);
 
         final HttpServer server =
-                startServer(repository);
+                startServer(services);
 
         ClassLoader loader = Main.class.getClassLoader();
         CLStaticHttpHandler docsHandler = new CLStaticHttpHandler(loader, "swagger-ui/");

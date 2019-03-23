@@ -3,8 +3,7 @@ package za.co.no9.ses8.adaptors.api.javalin;
 import com.google.gson.Gson;
 import io.javalin.websocket.WsSession;
 import za.co.no9.ses8.domain.Event;
-import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
+import za.co.no9.ses8.domain.Services;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -14,15 +13,15 @@ public class Session {
             new Gson();
 
     private final WsSession wsSession;
-    private final Repository repository;
+    private final Services services;
 
     private Optional<Integer> fromID =
             Optional.empty();
 
 
-    public Session(WsSession wsSession, Repository repository) {
+    public Session(WsSession wsSession, Services services) {
         this.wsSession = wsSession;
-        this.repository = repository;
+        this.services = services;
     }
 
     public void close() {
@@ -35,12 +34,9 @@ public class Session {
             int pageSize =
                     1000;
 
-            UnitOfWork unitOfWork =
-                    repository.newUnitOfWork();
-
             while (true) {
                 Stream<Event> events =
-                        unitOfWork.events(fromID, pageSize);
+                        services.events(fromID, pageSize);
 
                 Optional<Integer> last =
                         fromID;

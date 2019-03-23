@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.adaptors.api.jersey.EventBean;
 import za.co.no9.ses8.adaptors.api.jersey.NewEventBean;
 import za.co.no9.ses8.adaptors.repository.InMemory;
-import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
+import za.co.no9.ses8.domain.Services;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.ClientBuilder;
@@ -22,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class APITest {
-    private Repository repository;
+    private Services services;
 
     private Main server;
     private WebTarget target;
@@ -30,11 +29,11 @@ class APITest {
 
     @BeforeEach
     void before() {
-        repository =
-                new InMemory();
+        services =
+                new Services(new InMemory());
 
         server =
-                new Main(repository);
+                new Main(services);
 
         target =
                 ClientBuilder.newClient().target(Main.DEFAULT_BASE_URI);
@@ -49,12 +48,9 @@ class APITest {
 
     @Test
     void knownEvent() {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         EventBean response =
                 target.path("events/2").request().get(EventBean.class);
@@ -65,12 +61,9 @@ class APITest {
 
     @Test
     void unknownEvent() {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         Assertions.assertThrows(NotFoundException.class, () -> target.path("events/10").request().get(EventBean.class));
     }
@@ -78,11 +71,8 @@ class APITest {
 
     @Test
     void events() {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
 
         List<EventBean> response =
                 target.path("events").request().get(new GenericType<List<EventBean>>() {
@@ -97,13 +87,10 @@ class APITest {
 
     @Test
     void eventsFrom() {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
-        unitOfWork.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Luke Skywalker\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Ben Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
+        services.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
 
         List<EventBean> response =
                 target.path("events")
@@ -121,10 +108,7 @@ class APITest {
 
     @Test
     void eventsWithDefaultPageSize() {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        populateEvents(unitOfWork, "SomeEventHappened", 200);
+        populateEvents();
 
         List<EventBean> response =
                 target.path("events").request().get(new GenericType<List<EventBean>>() {
@@ -136,10 +120,7 @@ class APITest {
 
     @Test
     void eventsFromWithPageSize() {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        populateEvents(unitOfWork, "SomeEventHappened", 200);
+        populateEvents();
 
         List<EventBean> response =
                 target.path("events")
@@ -171,9 +152,9 @@ class APITest {
     }
 
 
-    private void populateEvents(UnitOfWork unitOfWork, String name, int number) {
-        for (int lp = 0; lp < number; lp += 1) {
-            unitOfWork.saveEvent(name, "{count: " + lp + "}");
+    private void populateEvents() {
+        for (int lp = 0; lp < 200; lp += 1) {
+            services.saveEvent("SomeEventHappened", "{count: " + lp + "}");
         }
     }
 }

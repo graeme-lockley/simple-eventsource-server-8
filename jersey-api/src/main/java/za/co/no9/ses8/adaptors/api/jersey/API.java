@@ -2,8 +2,7 @@ package za.co.no9.ses8.adaptors.api.jersey;
 
 import io.swagger.annotations.Api;
 import za.co.no9.ses8.domain.Event;
-import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
+import za.co.no9.ses8.domain.Services;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -18,18 +17,15 @@ import java.util.stream.Collectors;
 @Path("events")
 public class API {
     @Inject
-    public Repository repository;
+    public Services services;
 
 
     @POST
     @Consumes("application/json")
     @Produces("application/json")
     public EventBean saveEvent(NewEventBean newEvent) {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
         Event event =
-                unitOfWork.saveEvent(newEvent.name, newEvent.content);
+                services.saveEvent(newEvent.name, newEvent.content);
 
         return EventBean.from(event);
     }
@@ -38,8 +34,7 @@ public class API {
     @GET
     @Produces("application/json")
     public List<EventBean> getEvents(@QueryParam("start") Integer start, @QueryParam("pagesize") @DefaultValue("100") int pageSize) {
-        return repository
-                .newUnitOfWork()
+        return services
                 .events(Optional.ofNullable(start), pageSize)
                 .map(EventBean::from)
                 .collect(Collectors.toList());
@@ -50,8 +45,7 @@ public class API {
     @Path("{id}")
     @Produces("application/json")
     public Response getEvent(@PathParam("id") int id) {
-        return repository
-                .newUnitOfWork()
+        return services
                 .event(id)
                 .map(event -> Response.status(Response.Status.OK).expires(calculateExpires()).entity(EventBean.from(event)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());

@@ -1,7 +1,6 @@
 package za.co.no9.ses8.domain;
 
 import za.co.no9.ses8.domain.ports.Repository;
-import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -14,18 +13,23 @@ public class Services {
         this.repository = repository;
     }
 
-    public Event saveEvent(UnitOfWork unitOfWork, String eventName, String content) {
-        return unitOfWork.saveEvent(eventName, content);
+
+    public Event saveEvent(String eventName, String content) {
+        return repository
+                .newUnitOfWork()
+                .saveEvent(eventName, content);
     }
 
 
-    public Stream<Event> events(UnitOfWork unitOfWork, Optional<Integer> from, int pageSize) {
-        return unitOfWork.events(from, pageSize);
+    public Stream<Event> events(Optional<Integer> from, int pageSize) {
+        return repository.newUnitOfWork().events(from, pageSize);
     }
 
 
-    public Optional<Event> event(UnitOfWork unitOfWork, int id) {
-        return unitOfWork.event(id);
+    public Optional<Event> event(int id) {
+        return repository
+                .newUnitOfWork()
+                .event(id);
     }
 
 

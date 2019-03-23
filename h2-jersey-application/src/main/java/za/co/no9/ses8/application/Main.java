@@ -10,7 +10,7 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jdbi.v3.core.Jdbi;
 import za.co.no9.ses8.adaptors.repository.H2;
-import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.domain.Services;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,24 +31,23 @@ public class Main {
 
     private String baseURI;
     private HttpServer server;
-    private Repository repository;
+    private Services services;
 
-
-    public Main(String baseURI, Repository repository) {
+    public Main(String baseURI, Services services) {
         this.baseURI = baseURI;
-        this.repository = repository;
+        this.services = services;
 
         startup();
     }
 
 
-    public Main(Repository repository) {
-        this(DEFAULT_BASE_URI, repository);
+    public Main(Services services) {
+        this(DEFAULT_BASE_URI, services);
     }
 
 
     public Main(String baseURI, String jdbcURL, String username, String password) {
-        this(baseURI, new H2(Jdbi.create(jdbcURL, username, password)));
+        this(baseURI, new Services(new H2(Jdbi.create(jdbcURL, username, password))));
     }
 
 
@@ -71,7 +70,7 @@ public class Main {
                         .register(new AbstractBinder() {
                             @Override
                             protected void configure() {
-                                bind(repository).to(Repository.class);
+                                bind(services).to(Services.class);
                             }
                         })
                         .register(io.swagger.jaxrs.listing.ApiListingResource.class)

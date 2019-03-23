@@ -3,9 +3,9 @@ package za.co.no9.ses8.application;
 import io.javalin.Javalin;
 import org.apache.commons.cli.*;
 import org.jdbi.v3.core.Jdbi;
-import za.co.no9.ses8.adaptors.repository.H2;
 import za.co.no9.ses8.adaptors.api.javalin.API;
-import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.adaptors.repository.H2;
+import za.co.no9.ses8.domain.Services;
 
 import java.io.IOException;
 
@@ -25,37 +25,37 @@ public class Main {
 
     private int port;
     private Javalin server;
-    private Repository repository;
+    private Services services;
 
 
-    public Main(int port, Repository repository) {
+    public Main(int port, Services services) {
         this.port = port;
-        this.repository = repository;
+        this.services = services;
 
         startup();
     }
 
 
     public Main(int port, String jdbcURL, String username, String password) {
-        this(port, new H2(Jdbi.create(jdbcURL, username, password)));
+        this(port, new Services(new H2(Jdbi.create(jdbcURL, username, password))));
     }
 
 
-    static Javalin startServer(Repository repository, int port) {
+    static Javalin startServer(Services services, int port) {
         Javalin javalin = Javalin
                 .create()
                 .port(port)
                 .disableStartupBanner()
                 .start();
 
-        API.addEndpoints(javalin, repository);
+        API.addEndpoints(javalin, services);
 
         return javalin;
     }
 
 
     private void startup() {
-        server = startServer(repository, port);
+        server = startServer(services, port);
     }
 
 

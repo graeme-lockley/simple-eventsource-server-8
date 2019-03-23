@@ -3,7 +3,7 @@ package za.co.no9.ses8.adaptors.api.javalin;
 import io.javalin.websocket.WsHandler;
 import io.javalin.websocket.WsSession;
 import za.co.no9.ses8.domain.Observer;
-import za.co.no9.ses8.domain.ports.Repository;
+import za.co.no9.ses8.domain.Services;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +13,11 @@ public class WebsocketAPI implements Observer {
     private final Map<String, Session> sessions =
             new HashMap<>();
 
-    private final Repository repository;
+    private final Services services;
 
 
-    public WebsocketAPI(Repository repository) {
-        this.repository = repository;
+    public WebsocketAPI(Services services) {
+        this.services = services;
     }
 
 
@@ -34,7 +34,7 @@ public class WebsocketAPI implements Observer {
     private synchronized void connect(WsSession wsSession) {
         System.out.println("WsConnect: " + wsSession.getId());
 
-        sessions.put(wsSession.getId(), new Session(wsSession, repository));
+        sessions.put(wsSession.getId(), new Session(wsSession, services));
     }
 
 
