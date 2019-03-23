@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import za.co.no9.ses8.adaptors.repository.InMemory;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ class APITest {
     private Gson gson =
             new Gson();
 
-    private TestRepositoryImpl repository;
+    private InMemory repository;
 
     private Javalin server;
 
@@ -32,7 +33,7 @@ class APITest {
     @BeforeEach
     void before() {
         repository =
-                new TestRepositoryImpl();
+                new InMemory();
 
         server =
                 Main.startServer(repository);
@@ -55,7 +56,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         String response =
-                Request.Get(Main.BASE_URI + "events/1").execute().returnContent().asString();
+                Request.Get(Main.BASE_URI + "events/2").execute().returnContent().asString();
 
         EventBean eventBean =
                 gson.fromJson(response, EventBean.class);
@@ -112,7 +113,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Leia Organa\"}");
 
         String response =
-                Request.Get(Main.BASE_URI + "events?start=1").execute().returnContent().asString();
+                Request.Get(Main.BASE_URI + "events?start=2").execute().returnContent().asString();
 
         List<EventBean> eventBeans =
                 toEventBeanList(response);

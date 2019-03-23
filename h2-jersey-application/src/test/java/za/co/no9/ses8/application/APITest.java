@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import za.co.no9.ses8.adaptors.EventBean;
 import za.co.no9.ses8.adaptors.NewEventBean;
+import za.co.no9.ses8.adaptors.repository.InMemory;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
@@ -30,7 +31,7 @@ class APITest {
     @BeforeEach
     void before() {
         repository =
-                new TestRepositoryImpl();
+                new InMemory();
 
         server =
                 new Main(repository);
@@ -56,7 +57,7 @@ class APITest {
         unitOfWork.saveEvent("CustomerAdded", "{name: \"Han Solo\"}");
 
         EventBean response =
-                target.path("events/1").request().get(EventBean.class);
+                target.path("events/2").request().get(EventBean.class);
 
         assertEventEquals("CustomerAdded", "Ben Solo", response);
     }
@@ -106,7 +107,7 @@ class APITest {
 
         List<EventBean> response =
                 target.path("events")
-                        .queryParam("start", 1)
+                        .queryParam("start", 2)
                         .request()
                         .get(new GenericType<List<EventBean>>() {
                         });

@@ -7,6 +7,7 @@ import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import za.co.no9.ses8.adaptors.repository.InMemory;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
@@ -46,7 +47,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         final Repository repository =
-                new TestRepositoryImpl();
+                new InMemory();
 
         insertRows(repository);
 
