@@ -18,7 +18,8 @@ public class Main {
 
 
     static Javalin startServer(Services services) {
-        Consumer<WsHandler> wsHandlerConsumer = new WebsocketAPI(services).invoke();
+        Consumer<WsHandler> wsHandlerConsumer =
+                new WebsocketAPI(services).invoke();
 
         Javalin javalin = Javalin
                 .create()
