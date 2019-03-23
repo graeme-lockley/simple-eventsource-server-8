@@ -18,7 +18,7 @@ public class Main {
             8080;
 
     private static final String DEFAULT_JDBC_URL =
-            "jdbc:h2:./h2-jersey-application/target/stream";
+            "jdbc:h2:./h2-javalin-application/target/stream";
 
     private static final String DEFAULT_JDBC_USER =
             "sa";
