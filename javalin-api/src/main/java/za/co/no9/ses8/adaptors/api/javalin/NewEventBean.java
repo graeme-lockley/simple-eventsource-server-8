@@ -1,4 +1,4 @@
-package za.co.no9.ses8.adaptors.rest.javalin;
+package za.co.no9.ses8.adaptors.api.javalin;
 
 
 public class NewEventBean {

@@ -1,4 +1,4 @@
-package za.co.no9.ses8.adaptors.rest.jersey;
+package za.co.no9.ses8.adaptors.api.jersey;
 
 import io.swagger.annotations.Api;
 import za.co.no9.ses8.domain.Event;

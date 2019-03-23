@@ -1,31 +1,48 @@
-package za.co.no9.ses8.adaptors.rest.javalin;
+package za.co.no9.ses8.adaptors.api.jersey;
 
-import io.javalin.Javalin;
+import io.swagger.jaxrs.config.BeanConfig;
+import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.ServerConfiguration;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 import za.co.no9.ses8.adaptors.repository.InMemory;
-import za.co.no9.ses8.adaptors.rest.javalin.API;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Random;
 
 
 public class Main {
-    static final String BASE_URI =
+    public static final String BASE_URI =
             "http://localhost:8080/api/";
 
 
-    static Javalin startServer(Repository repository) {
-        Javalin javalin = Javalin
-                .create()
-                .port(8080)
-                .enableStaticFiles("swagger-ui/")
-                .disableStartupBanner()
-                .start();
+    public static HttpServer startServer(Repository repository) {
+        String resources = "za.co.no9.ses8.adaptors";
+        BeanConfig beanConfig = new BeanConfig();
+        beanConfig.setVersion("1.0.2");
+        beanConfig.setSchemes(new String[]{"http"});
+        beanConfig.setBasePath("/api/");
+        beanConfig.setResourcePackage(resources);
+        beanConfig.setScan(true);
 
-        API.addEndpoints(javalin, repository);
+        final ResourceConfig rc =
+                new ResourceConfig()
+                        .register(new AbstractBinder() {
+                            @Override
+                            protected void configure() {
+                                bind(repository).to(Repository.class);
+                            }
+                        })
+                        .register(io.swagger.jaxrs.listing.ApiListingResource.class)
+                        .register(io.swagger.jaxrs.listing.SwaggerSerializers.class)
+                        .packages("za.co.no9.ses8.adaptors");
 
-        return javalin;
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
     public static void main(String[] args) throws IOException {
@@ -34,13 +51,20 @@ public class Main {
 
         insertRows(repository);
 
-        final Javalin server =
+        final HttpServer server =
                 startServer(repository);
 
-        System.out.println("Server running - hit enter to stop it...");
+        ClassLoader loader = Main.class.getClassLoader();
+        CLStaticHttpHandler docsHandler = new CLStaticHttpHandler(loader, "swagger-ui/");
+        docsHandler.setFileCacheEnabled(false);
+
+        ServerConfiguration cfg = server.getServerConfiguration();
+        cfg.addHttpHandler(docsHandler, "/");
+
+        System.out.println(String.format("Jersey app started with WADL available at %sapplication.wadl\nHit enter to stop it...", BASE_URI));
 
         System.in.read();
-        server.stop();
+        server.shutdownNow();
     }
 
 

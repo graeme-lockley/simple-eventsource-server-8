@@ -4,7 +4,7 @@ import io.javalin.Javalin;
 import org.apache.commons.cli.*;
 import org.jdbi.v3.core.Jdbi;
 import za.co.no9.ses8.adaptors.repository.H2;
-import za.co.no9.ses8.adaptors.rest.javalin.API;
+import za.co.no9.ses8.adaptors.api.javalin.API;
 import za.co.no9.ses8.domain.ports.Repository;
 
 import java.io.IOException;
