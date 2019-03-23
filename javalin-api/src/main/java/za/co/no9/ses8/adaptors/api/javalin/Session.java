@@ -8,10 +8,12 @@ import za.co.no9.ses8.domain.Services;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+
 public class Session {
     private static final Gson gson =
             new Gson();
 
+    private final Mailbox mailbox;
     private final WsSession wsSession;
     private final Services services;
 
@@ -19,17 +21,30 @@ public class Session {
             Optional.empty();
 
 
-    public Session(WsSession wsSession, Services services) {
+    Session(Mailbox mailbox, WsSession wsSession, Services services) {
+        this.mailbox = mailbox;
         this.wsSession = wsSession;
         this.services = services;
     }
 
-    public void close() {
 
+    public void close() {
+        try {
+            wsSession.close();
+        } catch (Throwable t) {
+            System.err.println("Error throw whilst closing websocket: " + t.getMessage());
+        }
     }
 
 
-    public void ping() {
+    void ping() {
+        if (fromID.isPresent()) {
+            postCatchup();
+        }
+    }
+
+
+    void refresh() {
         if (fromID.isPresent()) {
             int pageSize =
                     1000;
@@ -59,8 +74,14 @@ public class Session {
         }
     }
 
+
     public void reset(String message) {
         fromID = Optional.of(Integer.parseInt(message));
         ping();
+    }
+
+
+    private void postCatchup() {
+        mailbox.postTask(new CatchupTask(this));
     }
 }

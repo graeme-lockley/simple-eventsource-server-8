@@ -15,6 +15,9 @@ public class WebsocketAPI implements Observer {
 
     private final Services services;
 
+    private final PostOffice postOffice =
+            new PostOffice(10);
+
 
     public WebsocketAPI(Services services) {
         this.services = services;
@@ -34,7 +37,10 @@ public class WebsocketAPI implements Observer {
     private synchronized void connect(WsSession wsSession) {
         System.out.println("WsConnect: " + wsSession.getId());
 
-        sessions.put(wsSession.getId(), new Session(wsSession, services));
+        String id =
+                wsSession.getId();
+
+        sessions.put(id, new Session(postOffice.mailbox(id), wsSession, services));
     }
 
 
@@ -45,7 +51,7 @@ public class WebsocketAPI implements Observer {
                 sessions.get(wsSession.getId());
 
         if (session == null) {
-            System.err.println("WsMessage: "+ wsSession.getId() + ": " + message + ": Unknown session ID");
+            System.err.println("WsMessage: " + wsSession.getId() + ": " + message + ": Unknown session ID");
         } else {
             session.reset(message);
         }
