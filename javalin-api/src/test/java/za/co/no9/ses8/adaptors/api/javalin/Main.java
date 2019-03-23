@@ -1,12 +1,14 @@
 package za.co.no9.ses8.adaptors.api.javalin;
 
 import io.javalin.Javalin;
+import io.javalin.websocket.WsHandler;
 import za.co.no9.ses8.adaptors.repository.InMemory;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.function.Consumer;
 
 
 public class Main {
@@ -15,10 +17,13 @@ public class Main {
 
 
     static Javalin startServer(Repository repository) {
+        Consumer<WsHandler> wsHandlerConsumer = Bob.invoke();
+
         Javalin javalin = Javalin
                 .create()
                 .port(8080)
-                .enableStaticFiles("swagger-ui/")
+                .enableStaticFiles("/")
+                .ws("/websocket/events", wsHandlerConsumer)
                 .disableStartupBanner()
                 .start();
 
@@ -91,5 +96,19 @@ public class Main {
         }
 
         return buffer.toString();
+    }
+
+    private static class Bob {
+        private static Consumer<WsHandler> invoke() {
+            return ws -> {
+                ws.onConnect(session -> System.out.println("Connected: [" + session.getId() + "]"));
+                ws.onMessage((session, message) -> {
+                    System.out.println("Received: " + session.getId() + ": " + message);
+                    session.getRemote().sendString("Echo: " + message + message);
+                });
+                ws.onClose((session, statusCode, reason) -> System.out.println("Closed: " + session.getId()));
+                ws.onError((session, throwable) -> System.out.println("Errored: " + session.getId()));
+            };
+        }
     }
 }
