@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Api(value = "/events", description = "Operations to access and append to the event stream.")
@@ -37,20 +38,11 @@ public class API {
     @GET
     @Produces("application/json")
     public List<EventBean> getEvents(@QueryParam("start") Integer start, @QueryParam("pagesize") @DefaultValue("100") int pageSize) {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        if (start == null) {
-            return unitOfWork
-                    .events(pageSize)
-                    .map(EventBean::from)
-                    .collect(Collectors.toList());
-        } else {
-            return unitOfWork
-                    .eventsFrom(start, pageSize)
-                    .map(EventBean::from)
-                    .collect(Collectors.toList());
-        }
+        return repository
+                .newUnitOfWork()
+                .events(Optional.ofNullable(start), pageSize)
+                .map(EventBean::from)
+                .collect(Collectors.toList());
     }
 
 
@@ -58,10 +50,8 @@ public class API {
     @Path("{id}")
     @Produces("application/json")
     public Response getEvent(@PathParam("id") int id) {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        return unitOfWork
+        return repository
+                .newUnitOfWork()
                 .event(id)
                 .map(event -> Response.status(Response.Status.OK).expires(calculateExpires()).entity(EventBean.from(event)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());

@@ -40,19 +40,17 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
 
 
     @Override
-    public Stream<Event> events(int pageSize) {
-        return jdbi.withHandle(handle -> handle
-                        .select("select id, when, name, content from event order by id limit ?", pageSize)
-                        .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
-                        .list()).stream();
-    }
-
-
-    @Override
-    public Stream<Event> eventsFrom(int id, int pageSize) {
-        return jdbi.withHandle(handle -> handle
-                .select("select id, when, name, content from event where id > ? order by id limit ?", id, pageSize)
-                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
-                .list()).stream();
+    public Stream<Event> events(Optional<Integer> from, int pageSize) {
+        return from
+                .map(id ->
+                        jdbi.withHandle(handle -> handle
+                                .select("select id, when, name, content from event where id > ? order by id limit ?", id, pageSize)
+                                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
+                                .list()))
+                .orElseGet(() ->
+                        jdbi.withHandle(handle -> handle
+                                .select("select id, when, name, content from event order by id limit ?", pageSize)
+                                .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
+                                .list())).stream();
     }
 }

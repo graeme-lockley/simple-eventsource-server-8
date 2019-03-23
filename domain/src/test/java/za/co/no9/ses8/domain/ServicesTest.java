@@ -47,7 +47,7 @@ class ServicesTest {
     @Test
     void allEventsOverEmptyStream() {
         Stream<Event> events =
-                services.events(unitOfWork, 100);
+                services.events(unitOfWork, Optional.empty(), 100);
 
         Assertions.assertEquals(0, events.count());
     }
@@ -60,7 +60,7 @@ class ServicesTest {
         services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.events(unitOfWork, 2);
+                services.events(unitOfWork, Optional.empty(), 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
@@ -76,7 +76,7 @@ class ServicesTest {
     @Test
     void eventsFromOverEmptyStream() {
         Stream<Event> events =
-                services.eventsFrom(unitOfWork, 1, 100);
+                services.events(unitOfWork, Optional.of(1), 100);
 
         Assertions.assertEquals(0, events.count());
     }
@@ -91,7 +91,7 @@ class ServicesTest {
         services.saveEvent(unitOfWork, "CustomerAdded", customerAddedEvent("Leia Organa"));
 
         Stream<Event> events =
-                services.eventsFrom(unitOfWork, 1, 2);
+                services.events(unitOfWork, Optional.of(1), 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);

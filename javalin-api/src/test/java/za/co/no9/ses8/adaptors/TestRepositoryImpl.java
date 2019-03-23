@@ -31,13 +31,8 @@ public class TestRepositoryImpl implements Repository {
             }
 
             @Override
-            public Stream<Event> events(int pageSize) {
-                return TestRepositoryImpl.this.events(pageSize);
-            }
-
-            @Override
-            public Stream<Event> eventsFrom(int id, int pageSize) {
-                return TestRepositoryImpl.this.eventsFrom(id, pageSize);
+            public Stream<Event> events(Optional<Integer> from, int pageSize) {
+                return TestRepositoryImpl.this.events(from, pageSize);
             }
         };
     }
@@ -59,8 +54,10 @@ public class TestRepositoryImpl implements Repository {
     }
 
 
-    private Stream<Event> events(int pageSize) {
-        return savedEvents.stream().limit(pageSize);
+    private Stream<Event> events(Optional<Integer> from, int pageSize) {
+        return from
+                .map(id -> eventsFrom(id, pageSize))
+                .orElseGet(() -> savedEvents.stream().limit(pageSize));
     }
 
 

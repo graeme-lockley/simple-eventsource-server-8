@@ -34,20 +34,11 @@ public class API {
 
 
     static List<EventBean> getEvents(Repository repository, Optional<Integer> start, int pageSize) {
-        UnitOfWork unitOfWork =
-                repository.newUnitOfWork();
-
-        return start
-                .map(s ->
-                        unitOfWork
-                                .eventsFrom(s, pageSize)
-                                .map(EventBean::from)
-                                .collect(Collectors.toList()))
-                .orElseGet(() ->
-                        unitOfWork
-                                .events(pageSize)
-                                .map(EventBean::from)
-                                .collect(Collectors.toList()));
+        return repository
+                .newUnitOfWork()
+                .events(start, pageSize)
+                .map(EventBean::from)
+                .collect(Collectors.toList());
     }
 
 

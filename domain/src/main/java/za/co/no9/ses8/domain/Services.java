@@ -11,13 +11,8 @@ public class Services {
     }
 
 
-    public Stream<Event> events(UnitOfWork unitOfWork, int pageSize) {
-        return unitOfWork.events(pageSize);
-    }
-
-
-    public Stream<Event> eventsFrom(UnitOfWork unitOfWork, int id, int pageSize) {
-        return unitOfWork.eventsFrom(id, pageSize);
+    public Stream<Event> events(UnitOfWork unitOfWork, Optional<Integer> from, int pageSize) {
+        return unitOfWork.events(from, pageSize);
     }
 
 

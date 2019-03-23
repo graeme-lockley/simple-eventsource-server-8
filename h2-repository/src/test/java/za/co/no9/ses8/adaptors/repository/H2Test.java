@@ -87,7 +87,7 @@ class H2Test {
         saveEvent("R2D2");
 
         Stream<Event> events =
-                unitOfWork.events(100);
+                unitOfWork.events(Optional.empty(), 100);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
@@ -107,7 +107,7 @@ class H2Test {
         saveEvent("R2D2");
 
         Stream<Event> events =
-                unitOfWork.events(2);
+                unitOfWork.events(Optional.empty(),2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
@@ -126,7 +126,7 @@ class H2Test {
         saveEvent("R2D2");
 
         Stream<Event> events =
-                unitOfWork.eventsFrom(2, 100);
+                unitOfWork.events(Optional.of(2), 100);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);
@@ -148,7 +148,7 @@ class H2Test {
         saveEvent("Leia Organa");
 
         Stream<Event> events =
-                unitOfWork.eventsFrom(2, 2);
+                unitOfWork.events(Optional.of(2), 2);
 
         Event[] eventsArray =
                 events.toArray(Event[]::new);

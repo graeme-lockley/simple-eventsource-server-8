@@ -10,7 +10,5 @@ public interface UnitOfWork {
 
     Optional<Event> event(int id);
 
-    Stream<Event> events(int pageSize);
-
-    Stream<Event> eventsFrom(int id, int pageSize);
+    Stream<Event> events(Optional<Integer> from, int pageSize);
 }
