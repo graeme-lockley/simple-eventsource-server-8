@@ -53,4 +53,14 @@ public class H2UnitOfWork implements za.co.no9.ses8.domain.ports.UnitOfWork {
                                 .map((rs, ctx) -> new Event(rs.getInt("id"), rs.getTimestamp("when"), rs.getString("name"), rs.getString("content")))
                                 .list())).stream();
     }
+
+
+    int lastEventID() {
+        return jdbi.withHandle(handler ->
+                handler
+                        .createQuery("select max(id) from event")
+                        .map((rs, ctx) -> rs.getInt(1))
+                        .findFirst()
+        ).orElse(Integer.MIN_VALUE);
+    }
 }

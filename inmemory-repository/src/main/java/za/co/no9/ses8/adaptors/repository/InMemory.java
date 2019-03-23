@@ -1,6 +1,7 @@
 package za.co.no9.ses8.adaptors.repository;
 
 import za.co.no9.ses8.domain.Event;
+import za.co.no9.ses8.domain.Observer;
 import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
@@ -11,6 +12,9 @@ import java.util.stream.StreamSupport;
 
 
 public class InMemory implements Repository {
+    private List<Observer> observers =
+            new ArrayList<>();
+
     private List<Event> savedEvents =
             new ArrayList<>();
 
@@ -39,12 +43,25 @@ public class InMemory implements Repository {
     }
 
 
+    @Override
+    public synchronized void register(za.co.no9.ses8.domain.Observer observer) {
+        observers.add(observer);
+    }
+
+
+    private synchronized void notifyObservers() {
+        observers.forEach(Observer::ping);
+    }
+
+
     private Event saveEvent(String eventName, String content) {
         Event detail =
                 new Event(idCounter, Date.from(Instant.now()), eventName, content);
 
         savedEvents.add(detail);
         idCounter += 1;
+
+        notifyObservers();
 
         return detail;
     }

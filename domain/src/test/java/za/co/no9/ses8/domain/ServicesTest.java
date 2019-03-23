@@ -17,11 +17,11 @@ class ServicesTest {
 
     @BeforeEach
     void beforeEach() {
-        services =
-                new Services();
-
         TestRepositoryImpl repository =
                 new TestRepositoryImpl();
+
+        services =
+                new Services(repository);
 
         unitOfWork =
                 repository.newUnitOfWork();

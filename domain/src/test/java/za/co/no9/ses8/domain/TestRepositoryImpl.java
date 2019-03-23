@@ -10,6 +10,9 @@ import java.util.stream.StreamSupport;
 
 
 public class TestRepositoryImpl implements Repository {
+    private List<Observer> observers =
+            new ArrayList<>();
+
     private List<Event> savedEvents =
             new ArrayList<>();
 
@@ -38,6 +41,17 @@ public class TestRepositoryImpl implements Repository {
     }
 
 
+    @Override
+    public void register(Observer observer) {
+        observers.add(observer);
+    }
+
+
+    private void notifyObservers() {
+        observers.forEach(Observer::ping);
+    }
+
+
     private Event saveEvent(String eventName, String content) {
         Event detail =
                 new Event(idCounter, Date.from(Instant.now()), eventName, content);
@@ -45,6 +59,8 @@ public class TestRepositoryImpl implements Repository {
         savedEvents.add(detail);
         idCounter += 1;
 
+        notifyObservers();
+        
         return detail;
     }
 
