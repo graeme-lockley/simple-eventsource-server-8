@@ -1,5 +1,6 @@
 package za.co.no9.ses8.adaptors.api.javalin;
 
+import io.javalin.Javalin;
 import io.javalin.websocket.WsHandler;
 import io.javalin.websocket.WsSession;
 import za.co.no9.ses8.domain.Observer;
@@ -25,7 +26,7 @@ public class WebsocketAPI implements Observer {
     }
 
 
-    public Consumer<WsHandler> invoke() {
+    private Consumer<WsHandler> invoke() {
         return ws -> {
             ws.onConnect(this::connect);
             ws.onMessage(this::message);
@@ -80,5 +81,15 @@ public class WebsocketAPI implements Observer {
     @Override
     public synchronized void ping() {
         sessions.forEach((key, session) -> session.ping());
+    }
+
+
+    public static Javalin registerEndpoints(final Javalin server, final Services services) {
+        Consumer<WsHandler> wsHandlerConsumer =
+                new WebsocketAPI(services).invoke();
+
+        server.ws("/websocket/events", wsHandlerConsumer);
+
+        return server;
     }
 }

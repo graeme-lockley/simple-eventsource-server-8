@@ -1,7 +1,6 @@
 package za.co.no9.ses8.application;
 
 import io.javalin.Javalin;
-import io.javalin.websocket.WsHandler;
 import org.apache.commons.cli.*;
 import org.jdbi.v3.core.Jdbi;
 import za.co.no9.ses8.adaptors.api.javalin.API;
@@ -10,7 +9,6 @@ import za.co.no9.ses8.adaptors.repository.H2;
 import za.co.no9.ses8.domain.Services;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 
 public class Main {
@@ -45,18 +43,15 @@ public class Main {
 
 
     static Javalin startServer(Services services, int port) {
-        Consumer<WsHandler> wsHandlerConsumer =
-                new WebsocketAPI(services).invoke();
-
         Javalin javalin = Javalin
                 .create()
                 .port(port)
-                .ws("/websocket/events", wsHandlerConsumer)
                 .disableStartupBanner()
                 .enableCorsForOrigin("*")
                 .start();
 
         API.registerEndpoints(javalin, services);
+        WebsocketAPI.registerEndpoints(javalin, services);
 
         return javalin;
     }

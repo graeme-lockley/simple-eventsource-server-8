@@ -18,18 +18,15 @@ public class Main {
 
 
     static Javalin startServer(Services services) {
-        Consumer<WsHandler> wsHandlerConsumer =
-                new WebsocketAPI(services).invoke();
-
         Javalin javalin = Javalin
                 .create()
                 .port(8080)
-                .ws("/websocket/events", wsHandlerConsumer)
                 .disableStartupBanner()
                 .enableCorsForOrigin("*")
                 .start();
 
         API.registerEndpoints(javalin, services);
+        WebsocketAPI.registerEndpoints(javalin, services);
 
         return javalin;
     }
