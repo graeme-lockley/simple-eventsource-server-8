@@ -38,6 +38,7 @@
         <module>h2-repository</module>
         <module>h2-jersey-application</module>
         <module>h2-javalin-application</module>
+        <module>ui-demo</module>
     </modules>
 
     <dependencies>
