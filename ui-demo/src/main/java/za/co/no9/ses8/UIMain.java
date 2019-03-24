@@ -5,7 +5,7 @@ import io.javalin.Javalin;
 import java.io.IOException;
 
 
-public class Main {
+public class UIMain {
     public static void main(String[] args) throws IOException {
         final Javalin server =
                 Javalin
