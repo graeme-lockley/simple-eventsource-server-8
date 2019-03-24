@@ -20,7 +20,7 @@ public class WebsocketAPI implements Observer {
             new PostOffice(10);
 
 
-    public WebsocketAPI(Services services) {
+    private WebsocketAPI(Services services) {
         this.services = services;
         services.registerObserver(this);
     }
