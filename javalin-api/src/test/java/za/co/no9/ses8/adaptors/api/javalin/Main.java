@@ -8,6 +8,7 @@ import za.co.no9.ses8.domain.ports.Repository;
 import za.co.no9.ses8.domain.ports.UnitOfWork;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -24,9 +25,9 @@ public class Main {
         Javalin javalin = Javalin
                 .create()
                 .port(8080)
-                .enableStaticFiles("/")
                 .ws("/websocket/events", wsHandlerConsumer)
                 .disableStartupBanner()
+                .enableCorsForOrigin("*")
                 .start();
 
         API.addEndpoints(javalin, services);

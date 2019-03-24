@@ -2,9 +2,11 @@ package za.co.no9.ses8.adaptors.api.javalin;
 
 import com.google.gson.Gson;
 import io.javalin.Javalin;
+import org.apache.commons.io.IOUtils;
 import za.co.no9.ses8.domain.Event;
 import za.co.no9.ses8.domain.Services;
 
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -94,6 +96,14 @@ public class API {
 
             ctx.header("Content-Type", "application/json");
             ctx.result(gson.toJson(eventBean));
+        });
+
+        server.get("/api", ctx -> {
+            try (InputStream resourceAsStream =
+                         API.class.getResourceAsStream("/swagger.yaml")) {
+
+                ctx.result(IOUtils.toString(resourceAsStream));
+            }
         });
 
         return server;

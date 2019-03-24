@@ -53,6 +53,7 @@ public class Main {
                 .port(port)
                 .ws("/websocket/events", wsHandlerConsumer)
                 .disableStartupBanner()
+                .enableCorsForOrigin("*")
                 .start();
 
         API.addEndpoints(javalin, services);
