@@ -60,21 +60,28 @@ public class WebsocketAPI implements Observer {
     }
 
 
-    private synchronized void close(WsSession wsSession, int statusCode, String reason) {
+    private void close(WsSession wsSession, int statusCode, String reason) {
         System.out.println("WeClose: " + wsSession.getId() + ": " + statusCode + ": " + reason);
 
-        Session session =
-                sessions.get(wsSession.getId());
-
-        if (session != null) {
-            session.close();
-            sessions.remove(wsSession.getId());
-        }
+        removeSession(wsSession.getId());
     }
 
 
-    private synchronized void error(WsSession wsSession, Throwable throwable) {
+    private void error(WsSession wsSession, Throwable throwable) {
         System.out.println("WsError: " + wsSession.getId() + ": " + throwable.getMessage());
+
+        removeSession(wsSession.getId());
+    }
+
+
+    private synchronized void removeSession(String sessionId) {
+        Session session =
+                sessions.get(sessionId);
+
+        if (session != null) {
+            session.close();
+            sessions.remove(sessionId);
+        }
     }
 
 
