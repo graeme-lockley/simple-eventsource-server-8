@@ -56,7 +56,7 @@ public class Main {
                 .enableCorsForOrigin("*")
                 .start();
 
-        API.addEndpoints(javalin, services);
+        API.registerEndpoints(javalin, services);
 
         return javalin;
     }

@@ -58,7 +58,7 @@ public class API {
     }
 
 
-    public static Javalin addEndpoints(final Javalin server, final Services services) {
+    public static Javalin registerEndpoints(final Javalin server, final Services services) {
         final API api =
                 new API(services);
 
