@@ -95,7 +95,7 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>

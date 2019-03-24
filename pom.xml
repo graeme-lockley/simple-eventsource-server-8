@@ -21,6 +21,8 @@
         <h2.database.version>1.4.199</h2.database.version>
         <java.activation.version>1.1.1</java.activation.version>
         <jaxb.version>2.3.0</jaxb.version>
+        <jaxb.core.version>2.3.0.1</jaxb.core.version>
+        <jaxb.impl.version>2.3.2</jaxb.impl.version>
         <jdbi.version>3.6.0</jdbi.version>
         <javalin.version>2.7.0</javalin.version>
         <jersey.version>2.28</jersey.version>
