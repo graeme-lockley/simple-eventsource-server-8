@@ -6,6 +6,7 @@ import za.co.no9.ses8.domain.Services;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,11 +34,28 @@ public class API {
 
     @GET
     @Produces("application/json")
-    public List<EventBean> getEvents(@QueryParam("start") Integer start, @QueryParam("pagesize") @DefaultValue("100") int pageSize) {
-        return services
+    public Response getEvents(@QueryParam("start") Integer start, @QueryParam("pagesize") @DefaultValue("100") int pageSize) {
+        List<EventBean> eventBeans = services
                 .events(Optional.ofNullable(start), pageSize)
                 .map(EventBean::from)
                 .collect(Collectors.toList());
+
+        GenericEntity<List<EventBean>> entity =
+                new GenericEntity<List<EventBean>>(eventBeans) {
+                };
+
+        if (eventBeans.size() == pageSize) {
+            return Response
+                    .status(Response.Status.OK)
+                    .expires(calculateExpires())
+                    .entity(entity)
+                    .build();
+        } else {
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(entity)
+                    .build();
+        }
     }
 
 
