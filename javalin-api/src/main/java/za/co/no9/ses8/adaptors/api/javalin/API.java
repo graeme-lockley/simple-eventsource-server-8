@@ -48,7 +48,7 @@ public class API {
     }
 
 
-    private Date calculateExpires() {
+    private static Date calculateExpires() {
         Calendar instance =
                 Calendar.getInstance();
 
@@ -67,6 +67,7 @@ public class API {
 
             if (event.isPresent()) {
                 ctx.header("Content-Type", "application/json");
+                ctx.header("Expires", calculateExpires().toGMTString());
                 ctx.result(gson.toJson(event.get()));
             } else {
                 ctx.status(412);
@@ -84,6 +85,9 @@ public class API {
                     api.getEvents(start, pageSize);
 
             ctx.header("Content-Type", "application/json");
+            if (events.size() == pageSize) {
+                ctx.header("Expires", calculateExpires().toGMTString());
+            }
             ctx.result(gson.toJson(events));
         });
 
